@@ -11,6 +11,8 @@
 #include "util.h"
 #include "spline.h"
 
+#include "trajectory.h"
+
 using namespace std;
 
 // for convenience
