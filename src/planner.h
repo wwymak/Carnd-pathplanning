@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <vector>
-#include "Eigen-3.3/unsupported/Eigen/Polynomials"
 
 
 using namespace std;
@@ -19,7 +18,7 @@ public:
     vector<double>obstacles_s;
     vector<double>obstacles_d;
 
-    bool check_collision(Frenetpath path, vector<double> obstacles_s, vector<double> obstacles_d);
+//    bool check_collision(Frenetpath path, vector<double> obstacles_s, vector<double> obstacles_d);
 };
 
 

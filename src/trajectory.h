@@ -26,7 +26,7 @@ public:
     Trajectory(VectorXd startState, VectorXd endState, float duration, float startTime, VectorXd coeffs_s, VectorXd coeffs_d);
 
     double  CalcJerkAt(VectorXd coeffs, double T);
-    double CalcAccelAt(VectorXd coeffs, double time)
+    double CalcAccelAt(VectorXd coeffs, double time);
     double JerkCost(double duration);
     double AccelCost(double duration);
     double SpeedCost(double duration, double targetSpeed);
@@ -37,17 +37,16 @@ public:
     //lane keeping trajectory
     VectorXd QuarticPolynomialCoeffs(VectorXd startState, VectorXd endState, float T);
 
-    VectorXd CalcStateAt(VectorXd polycoeffs, double time);
+    VectorXd CalcPositionAt(VectorXd polycoeffs, double time);
 
-    FrenetPath Trajectory::VelocityKeepingPath() {
 
-    }
+    FrenetPath GeneralPath(double s0, double current_d, double current_d_dotdot);
 
-    FrenetPath Trajectory::GeneralPath(double s0, double current_d, double current_d_dotdot);
+    vector<FrenetPath> GetFrenetPaths(double current_s,double current_s_dot, double current_s_dotdot,  double current_d,
+                                      double current_d_dot, double current_d_ddotdot);
 
-    vector<FrenetPath> Trajectory::GetFrenetPaths(double current_speed, double current_d,
-                                                  double current_d_dot, double current_d_ddotdot, double s0);
-
+    vector<FrenetPath> GetFrenetPathsSpeedChanging(double current_s,double current_s_dot, double current_s_dotdot,  double current_d,
+                                                   double current_d_dot, double current_d_ddotdot);
 };
 
 

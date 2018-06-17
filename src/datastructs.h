@@ -42,13 +42,25 @@ struct WaypointData
 
 struct FrenetPath
 {
-    Eigen::VectorXd startState;
-    Eigen::VectorXd endState;
-    Eigen::VectorXd coeffs_s;
-    Eigen::VectorXd coeffs_d;
+//    Eigen::VectorXd startState;
+//    Eigen::VectorXd endState;
+//    Eigen::VectorXd coeffs_s;
+//    Eigen::VectorXd coeffs_d;
 
     vector<double> timesteps;
     vector<double> d;
+    vector<double> d_dot;
+    vector<double> d_dotdot;
+    vector<double> d_dotdotdot;
+    vector<double> s;
+    vector<double> s_dot;
+    vector<double> s_dotdot;
+    vector<double> s_dotdotdot;
+
+    double cost_d;
+    double cost_s;
+    double cost_total;
+
 };
 
 #endif //PATH_PLANNING_DATASTRUCTS_H
