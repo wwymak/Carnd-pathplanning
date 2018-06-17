@@ -7,6 +7,8 @@
 
 #include "Eigen-3.3/Eigen/Eigen"
 #include "Eigen-3.3/Eigen/Core"
+#include "datastructs.h"
+#include "vector"
 
 using namespace Eigen;
 
@@ -19,9 +21,13 @@ public:
     Trajectory();
     virtual ~Trajectory();
 
-    void Init(VectorXd startState, VectorXd endState, float duration, float startTime);
+    double timeInterval = 0.02; //car gets sensor data every 0.02s
 
-    double JerkCost(double duration, double maxJerkS, double maxJerkD);
+    Trajectory(VectorXd startState, VectorXd endState, float duration, float startTime, VectorXd coeffs_s, VectorXd coeffs_d);
+
+    double  CalcJerkAt(VectorXd coeffs, double T);
+    double CalcAccelAt(VectorXd coeffs, double time)
+    double JerkCost(double duration);
     double AccelCost(double duration);
     double SpeedCost(double duration, double targetSpeed);
     double ClosenessCost();
@@ -30,6 +36,17 @@ public:
     VectorXd QuinicPolynomialCoeffs(VectorXd startState, VectorXd endState, float T);
     //lane keeping trajectory
     VectorXd QuarticPolynomialCoeffs(VectorXd startState, VectorXd endState, float T);
+
+    VectorXd CalcStateAt(VectorXd polycoeffs, double time);
+
+    FrenetPath Trajectory::VelocityKeepingPath() {
+
+    }
+
+    FrenetPath Trajectory::GeneralPath(double s0, double current_d, double current_d_dotdot);
+
+    vector<FrenetPath> Trajectory::GetFrenetPaths(double current_speed, double current_d,
+                                                  double current_d_dot, double current_d_ddotdot, double s0);
 
 };
 

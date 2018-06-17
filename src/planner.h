@@ -8,7 +8,6 @@
 #include <iostream>
 #include <vector>
 #include "Eigen-3.3/unsupported/Eigen/Polynomials"
-#include "frenetpath.h"
 
 
 using namespace std;
