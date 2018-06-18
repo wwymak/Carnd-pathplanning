@@ -408,33 +408,8 @@ vector<FrenetPath> Trajectory::GetFrenetPathsSpeedChanging(double current_s,doub
 };
 
 
-double Trajectory::CalcJerkAt(VectorXd coeffs, double time)
-{
-    // s(t) = a0 + a1 * t + a2 * t^2 + a3 * t^3 + a4 * t^4 + a5 * t^5
-    //s_dot = a1 + 2a2 * t + 3ac * t^2 + 4a4 * t^4 + 5a5 * t^4
-    // s_dotdot(t) = 2a2 + 6a3 * t + 12a4 * t^2 + 20a5 * t^3
-    // calculate s_ddd(t)
-    return 6 * coeffs(3) + 24 * coeffs(4) * time + 60 * coeffs(5) * time * time;
-}
 
-double Trajectory::CalcAccelAt(VectorXd coeffs, double time)
-{
-    // s(t) = a0 + a1 * t + a2 * t^2 + a3 * t^3 + a4 * t^4 + a5 * t^5
-    //s_dot = a1 + 2a2 * t + 3ac * t^2 + 4a4 * t^4 + 5a5 * t^4
-    // s_dotdot(t) = 2a2 + 6a3 * t + 12a4 * t^2 + 20a5 * t^3
-    // calculate s_ddd(t)
-    return 2 * coeffs(2) + 6 * coeffs(3) * time + 12 * coeffs(4) * time * time + 20 * coeffs(5) * time * time * time;
-}
 
-double Trajectory::JerkCost(double duration) {
-    double cost_s = 0;
-    double cost_d = 0;
 
-    int steps = static_cast<int>(duration/ DT);
-
-    for (int i = 0; i < steps; i++) {
-//        double jerk_s = CalcJerkAt()
-    }
-}
 
 
