@@ -10,7 +10,7 @@
 #include "json.hpp"
 #include "util.h"
 #include "spline.h"
-
+#include "datastructs.h"
 #include "trajectory.h"
 
 using namespace std;
@@ -94,14 +94,14 @@ int main() {
 
                 if (event == "telemetry") {
                     // j[1] is the data JSON object
-
+                    CarPositonData car;
                     // Main car's localization Data
-                    double car_x = j[1]["x"];
-                    double car_y = j[1]["y"];
-                    double car_s = j[1]["s"];
-                    double car_d = j[1]["d"];
-                    double car_yaw = j[1]["yaw"];
-                    double car_speed = j[1]["speed"];
+                    car.x = j[1]["x"];
+                    car.y = j[1]["y"];
+                    car.s = j[1]["s"];
+                    car.d = j[1]["d"];
+                    car.yaw = j[1]["yaw"];
+                    car.speed = j[1]["speed"];
 
                     // Previous path data given to the Planner
                     auto previous_path_x = j[1]["previous_path_x"];
@@ -126,13 +126,13 @@ int main() {
                     vector<double> pts_x;
                     vector<double> pts_y;
 
-                    double ref_x = car_x;
-                    double ref_y = car_y;
-                    double ref_yaw = deg2rad(car_yaw);
-                    double ref_s = car_s;
+                    double ref_x = car.x;
+                    double ref_y = car.y;
+                    double ref_yaw = deg2rad(car.yaw);
+                    double ref_s = car.s;
 
-                    double ref_x_prev = car_x - cos(ref_yaw);
-                    double ref_y_prev = car_y - sin(ref_yaw);
+                    double ref_x_prev = car.x - cos(ref_yaw);
+                    double ref_y_prev = car.y - sin(ref_yaw);
 
                     float ref_other_speed_collide = MAX_SPEED;
 

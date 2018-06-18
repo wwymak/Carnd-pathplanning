@@ -43,10 +43,14 @@ public:
     FrenetPath GeneralPath(double s0, double current_d, double current_d_dotdot);
 
     vector<FrenetPath> GetFrenetPaths(double current_s,double current_s_dot, double current_s_dotdot,  double current_d,
-                                      double current_d_dot, double current_d_ddotdot);
+                                      double current_d_dot, double current_d_ddotdot,double  target_d);
 
     vector<FrenetPath> GetFrenetPathsSpeedChanging(double current_s,double current_s_dot, double current_s_dotdot,  double current_d,
                                                    double current_d_dot, double current_d_ddotdot);
+
+    vector<FrenetPath> GetValidPaths(vector<FrenetPath> candidatPaths);
+
+    bool CheckNoCollision(vector<double>obstacles, FrenetPath path);
 };
 
 

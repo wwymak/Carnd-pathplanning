@@ -21,12 +21,13 @@ const double MAX_ROAD_D = 8.0;   //maximum road width [m]
 const double MIN_ROAD_D = 2.0;   //maximum road width [m]
 const double D_ROAD_W = 1.0;   // road width sampling length [m]
 const double DT = 0.02;   // time tick [s]
-const double MAXT = 5.0;   // max prediction time [s]
-const double MINT = 2.0;  // min prediction time [s]
+const double MAXT = 2.0;   // max prediction time [s]
+const double MINT = 0.8;  // min prediction time [s]
 const double TARGET_SPEED = mileph2meterps(49);   // [m/s]
 const double MIN_TARGET_SPEED = mileph2meterps(40);   // [m/s]
 const double D_T_S = mileph2meterps(0.5);   //target speed sampling length [m/s]
 const double N_S_SAMPLE = 1 ;  // sampling number of target speed
+const double SAFE_DISTANCE = MAX_SPEED * 2; //aka the 2 second rule
 
 
 // cost weights
@@ -143,7 +144,7 @@ VectorXd Trajectory::CalcPositionAt(VectorXd polycoeffs, double time) {
 }
 
 vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_dot, double current_s_dotdot,  double current_d,
-                                              double current_d_dot, double current_d_ddotdot) {
+                                              double current_d_dot, double current_d_ddotdot,double  target_d) {
     vector<FrenetPath> fpaths;
 
     for (int road_d_idx = 0; road_d_idx< int((MAX_ROAD_D - MIN_ROAD_D)/ D_ROAD_W) ; road_d_idx++) {
@@ -254,10 +255,10 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
                 if(MAX_SPEED < s_dot[s_dot.size()-1]) {
                     diff_s_dot_cost = 10000;
                 }
-                double diff_d_dot_cost = pow(d_dot[d_dot.size()-1], 2);
+                double diff_d_cost = pow((target_d - d[d.size()-1]), 2);
 
                 double cost_v =  KJ * cost_jerk_s + KT * predDuration + KS * diff_s_dot_cost;
-                double cost_d =  KJ * cost_jerk_d + KT * predDuration + KD * diff_s_dot_cost;
+                double cost_d =  KJ * cost_jerk_d + KT * predDuration + KD * diff_d_cost;
 
                 fp.cost_d = cost_d;
                 fp.cost_s = cost_v;
@@ -406,6 +407,32 @@ vector<FrenetPath> Trajectory::GetFrenetPathsSpeedChanging(double current_s,doub
 
     return fpaths;
 };
+
+bool CheckNoCollision(vector<double>obstacles, FrenetPath path) {
+
+    return true;
+}
+vector<FrenetPath> Trajectory::GetValidPaths(vector<FrenetPath> candidatePaths) {
+
+    vector<FrenetPath> validPaths;
+    for (int i = 0; i < candidatePaths.size(); i++ ){
+        FrenetPath testPath = candidatePaths.at(i);
+        if(any_of(testPath.s_dot.begin(), testPath.s_dot.end(), [](int speed) { return speed > MAX_SPEED;})) {
+            continue;
+        }
+        if(any_of(testPath.s_dotdot.begin(), testPath.s_dotdot.end(), [](int accel) { return abs(accel) > MAX_ACCEL;})) {
+            continue;
+        }
+        if(any_of(testPath.s_dotdotdot.begin(), testPath.s_dotdotdot.end(), [](int jerk) { return abs(jerk) > MAX_JERK;})) {
+            continue;
+        }
+
+    }
+
+
+    return validPaths;
+};
+
 
 
 

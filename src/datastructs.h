@@ -20,7 +20,7 @@ struct SensorData
 	double d;
 };
 
-struct LocalisationData
+struct CarPositonData
 {
     int id;
     double x;
