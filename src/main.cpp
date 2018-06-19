@@ -12,6 +12,8 @@
 #include "spline.h"
 #include "datastructs.h"
 #include "trajectory.h"
+#include "OtherVehicles.h"
+#include "EgoVehicle.h"
 
 using namespace std;
 
@@ -41,6 +43,10 @@ string hasData(string s) {
 
 int main() {
     uWS::Hub h;
+
+    OtherVehicles otherVehicles;
+    EgoVehicle egoVehicle;
+
 
     // Load up map values for waypoint's x,y,s and d normalized normal vectors
     vector<double> map_waypoints_x;
@@ -114,6 +120,21 @@ int main() {
                     auto sensor_fusion = j[1]["sensor_fusion"];
 
                     json msgJson;
+                    vector<SensorFusionData> sfArr;
+                    for (int i = 0; i < sensor_fusion.size(); i++) {
+                        SensorFusionData sf;
+                        sf.id = sensor_fusion.at(i).at(0);
+                        sf.x = sensor_fusion.at(i).at(1);
+                        sf.y = sensor_fusion.at(i).at(2);
+                        sf.vx = sensor_fusion.at(i).at(3);
+                        sf.vy = sensor_fusion.at(i).at(4);
+                        sf.d = sensor_fusion.at(i).at(6);
+                        sf.s = sensor_fusion.at(i).at(5);
+                        sfArr.push_back(sf);
+                    }
+                    otherVehicles.setSensorFusionData(sfArr);
+
+                    egoVehicle.updatePath(vLocal, previous_path_x, previous_path_y);
 
                     int prevpath_size = previous_path_x.size();
                     double horizon_x = 30.0;

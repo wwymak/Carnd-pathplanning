@@ -9,7 +9,7 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "vector"
 
-struct SensorData
+struct SensorFusionData
 {
 	int id;
 	double x;
