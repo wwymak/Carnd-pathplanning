@@ -12,9 +12,11 @@ using namespace std;
 
 class OtherVehicles {
 public:
+    OtherVehicles();
     double duration;
     double timestep;
     vector<SensorFusionData> sensorFusionDataMap;
+    void setPredictionTimeSettings(double duration, double deltaT);
     void setSensorFusionData(vector<SensorFusionData> sfData);
     vector<vector<double>> GetPredictedPath(SensorFusionData initPosition, double timeduration, double deltaT);
     vector<vector<double>> GetAllPredictedPath(SensorFusionData initPosition, double timeduration, double deltaT);

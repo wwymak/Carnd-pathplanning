@@ -4,9 +4,17 @@
 
 #include "OtherVehicles.h"
 
-void OtherVehicles::setSensorFusionData(vector<SensorFusionData> sfData) {
-    this->sensorFusionDataMap = sfData;
 
+OtherVehicles::OtherVehicles() {}
+
+void OtherVehicles::setSensorFusionData(vector<SensorFusionData> sfData) {
+    sensorFusionDataMap = sfData;
+
+};
+
+void OtherVehicles::setPredictionTimeSettings(double dur, double deltaT) {
+    duration = dur;
+    timestep = deltaT;
 };
 vector<vector<double>> OtherVehicles::GetPredictedPath(SensorFusionData initPosition, double timeduration, double deltaT) {
     vector<vector<double>> predictedPath;

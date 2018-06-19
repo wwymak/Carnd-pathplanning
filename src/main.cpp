@@ -134,7 +134,10 @@ int main() {
                     }
                     otherVehicles.setSensorFusionData(sfArr);
 
-                    egoVehicle.updatePath(vLocal, previous_path_x, previous_path_y);
+                    egoVehicle.updatePath(car, previous_path_x, previous_path_y);
+
+                    vector<double> next_x_vals = egoVehicle.getNextPathX();
+                    vector<double> next_y_vals = egoVehicle.getNextPathY();
 
                     int prevpath_size = previous_path_x.size();
                     double horizon_x = 30.0;
