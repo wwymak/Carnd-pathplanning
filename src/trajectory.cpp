@@ -408,7 +408,7 @@ vector<FrenetPath> Trajectory::GetFrenetPathsSpeedChanging(double current_s,doub
     return fpaths;
 };
 
-bool CheckNoCollision(vector<double>obstacles, FrenetPath path) {
+bool Trajectory::CheckNoCollision(vector<double>obstacles, FrenetPath path) {
 
     return true;
 }

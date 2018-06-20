@@ -9,26 +9,41 @@ OtherVehicles::OtherVehicles() {}
 
 void OtherVehicles::setSensorFusionData(vector<SensorFusionData> sfData) {
     sensorFusionDataMap = sfData;
-
+    setPredictedPaths();
 };
 
+void OtherVehicles::setPredictedPaths() {
+    predictedPaths = CalcAllPredictedPath();
+};
+
+vector<vector<CarPositonData>> OtherVehicles::getPredictedPaths() {
+    return predictedPaths;
+};
 void OtherVehicles::setPredictionTimeSettings(double dur, double deltaT) {
     duration = dur;
     timestep = deltaT;
 };
-vector<vector<double>> OtherVehicles::GetPredictedPath(SensorFusionData initPosition, double timeduration, double deltaT) {
-    vector<vector<double>> predictedPath;
+
+vector<CarPositonData> OtherVehicles::CalcPredictedPath(SensorFusionData initPosition) {
+    vector<CarPositonData> predictedPath;
     double speed = sqrt(pow(initPosition.vx , 2) + pow(initPosition.vy, 2));
     double s0 = initPosition.s;
-    for (int i = 0; i< int(timeduration /deltaT); i++) {
-        double s = i * speed * deltaT + s0;
-        double d = initPosition.d;
+    for (int i = 0; i< int(timestep /duration); i++) {
+        CarPositonData posInstance;
+        posInstance.s = i * speed * timestep + s0;
+        posInstance.d = initPosition.d;
 
-        predictedPath.push_back({s, d});
+        predictedPath.push_back(posInstance);
     }
     return predictedPath;
 };
 
-vector<vector<double>> GetAllPredictedPath(SensorFusionData initPosition, double timeduration, double deltaT) {
-//    for (int)
+vector<vector<CarPositonData>> OtherVehicles::CalcAllPredictedPath() {
+    vector<vector<CarPositonData>> allOtherVehicles;
+    for (int i = 0; i< sensorFusionDataMap.size(); i++) {
+        SensorFusionData initPosition = sensorFusionDataMap.at(i);
+        vector<CarPositonData> pathPoints = CalcPredictedPath(initPosition);
+        allOtherVehicles.push_back(pathPoints);
+    }
+    return allOtherVehicles;
 };

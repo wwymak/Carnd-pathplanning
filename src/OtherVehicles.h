@@ -16,10 +16,14 @@ public:
     double duration;
     double timestep;
     vector<SensorFusionData> sensorFusionDataMap;
+    vector<vector<CarPositonData>> predictedPaths;
+
     void setPredictionTimeSettings(double duration, double deltaT);
     void setSensorFusionData(vector<SensorFusionData> sfData);
-    vector<vector<double>> GetPredictedPath(SensorFusionData initPosition, double timeduration, double deltaT);
-    vector<vector<double>> GetAllPredictedPath(SensorFusionData initPosition, double timeduration, double deltaT);
+    void setPredictedPaths();
+    vector<vector<CarPositonData>> getPredictedPaths();
+    vector<CarPositonData> CalcPredictedPath(SensorFusionData initPosition);
+    vector<vector<CarPositonData>> CalcAllPredictedPath();
 
 
 };

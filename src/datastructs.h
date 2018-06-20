@@ -9,6 +9,8 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "vector"
 
+using namespace std;
+
 struct SensorFusionData
 {
 	int id;
