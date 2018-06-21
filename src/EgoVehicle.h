@@ -14,6 +14,12 @@ class EgoVehicle {
 public:
     vector<double> next_path_x;
     vector<double> next_path_y;
+
+
+    void generateLaneChangePath();
+    void generateLaneKeepingPath();
+    void generateOptimalPath();
+
     void updatePath(CarPositonData pos , vector<double> previous_path_x, vector<double> previous_path_y);
 
     vector<double> getNextPathX() {return next_path_x;};

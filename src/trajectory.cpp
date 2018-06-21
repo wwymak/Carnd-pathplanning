@@ -27,7 +27,9 @@ const double TARGET_SPEED = mileph2meterps(49);   // [m/s]
 const double MIN_TARGET_SPEED = mileph2meterps(40);   // [m/s]
 const double D_T_S = mileph2meterps(0.5);   //target speed sampling length [m/s]
 const double N_S_SAMPLE = 1 ;  // sampling number of target speed
-const double SAFE_DISTANCE = MAX_SPEED * 2; //aka the 2 second rule
+const double SAFE_DISTANCE_S = MAX_SPEED * 2; //aka the 2 second rule
+const double SAFE_DISTANCE_D = 2;
+const double LANE_SEPARATION = 4;
 
 
 // cost weights
@@ -408,8 +410,20 @@ vector<FrenetPath> Trajectory::GetFrenetPathsSpeedChanging(double current_s,doub
     return fpaths;
 };
 
-bool Trajectory::CheckNoCollision(vector<double>obstacles, FrenetPath path) {
+bool Trajectory::CheckNoCollision(vector<vector<CarPositonData>> obstacles, FrenetPath path) {
 
+    for (int j = 0; j < obstacles.size(); j++) {
+        vector<CarPositonData> obs = obstacles.at(j);
+        for (int i= 0; i< path.s.size(); i++) {
+            double dist_d = abs(path.d.at(i) - obs.at(i).d );
+            double dist_s = abs(path.s.at(i) - obs.at(i).s );
+            if (abs(path.d.at(i) - obs.at(i).d ) <= SAFE_DISTANCE_D  ) {
+                return false;
+            } else if(dist_d > SAFE_DISTANCE_D && dist_d <= LANE_SEPARATION && dist_s <= SAFE_DISTANCE_S) {
+                return false;
+            }
+        }
+    }
     return true;
 }
 vector<FrenetPath> Trajectory::GetValidPaths(vector<FrenetPath> candidatePaths) {
@@ -426,7 +440,10 @@ vector<FrenetPath> Trajectory::GetValidPaths(vector<FrenetPath> candidatePaths) 
         if(any_of(testPath.s_dotdotdot.begin(), testPath.s_dotdotdot.end(), [](int jerk) { return abs(jerk) > MAX_JERK;})) {
             continue;
         }
-
+        if(!CheckNoCollision(curr_obstacles.getPredictedPaths(), testPath)) {
+            continue;
+        }
+        validPaths.push_back(testPath);
     }
 
 

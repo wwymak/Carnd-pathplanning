@@ -6,7 +6,7 @@
 #define PATH_PLANNING_WAYPOINTS_H
 
 #include "spline.h"
-#include "datastructs.h";
+#include "datastructs.h"
 #include <vector>
 #include "Eigen-3.3/Eigen/Core"
 

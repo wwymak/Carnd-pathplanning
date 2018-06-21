@@ -5,7 +5,7 @@
 #ifndef PATH_PLANNING_OTHERVEHICLES_H
 #define PATH_PLANNING_OTHERVEHICLES_H
 
-#include "datastructs.h";
+#include "datastructs.h"
 #include <vector>
 
 using namespace std;
@@ -24,6 +24,7 @@ public:
     vector<vector<CarPositonData>> getPredictedPaths();
     vector<CarPositonData> CalcPredictedPath(SensorFusionData initPosition);
     vector<vector<CarPositonData>> CalcAllPredictedPath();
+    vector<double> ConvertPathsToObstacles();
 
 
 };

@@ -44,7 +44,10 @@ public:
 
     vector<FrenetPath> GetValidPaths(vector<FrenetPath> candidatePaths);
 
-    bool CheckNoCollision(vector<double>obstacles, FrenetPath path);
+    bool CheckNoCollision(vector<vector<CarPositonData>> obstacles, FrenetPath path);
+
+private:
+    OtherVehicles curr_obstacles;
 };
 
 

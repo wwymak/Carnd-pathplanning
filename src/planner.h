@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <vector>
+#include "OtherVehicles.h"
 
 
 using namespace std;

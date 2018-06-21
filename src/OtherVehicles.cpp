@@ -47,3 +47,14 @@ vector<vector<CarPositonData>> OtherVehicles::CalcAllPredictedPath() {
     }
     return allOtherVehicles;
 };
+
+//flattne the PredictedPaths vector of all other vehicles into a vector of obstacles that the
+//vector<double> OtherVehicles::ConvertPathsToObstacles() {
+//    vector<double> obstacles;
+//    for (int i = 0; i< sensorFusionDataMap.size(); i++) {
+//        SensorFusionData initPosition = sensorFusionDataMap.at(i);
+//        vector<CarPositonData> pathPoints = CalcPredictedPath(initPosition);
+//        allOtherVehicles.push_back(pathPoints);
+//    }
+//    return obstacles;
+//};
