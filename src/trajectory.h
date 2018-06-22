@@ -43,6 +43,7 @@ public:
                                                    double current_d_dot, double current_d_ddotdot);
 
     vector<FrenetPath> GetValidPaths(vector<FrenetPath> candidatePaths);
+    FrenetPath GetOptimalPath(vector<FrenetPath> validPaths);
 
     bool CheckNoCollision(vector<vector<CarPositonData>> obstacles, FrenetPath path);
 

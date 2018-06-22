@@ -7,6 +7,7 @@
 
 #include "spline.h"
 #include "datastructs.h"
+#include "util.h"
 #include <vector>
 #include "Eigen-3.3/Eigen/Core"
 
@@ -26,7 +27,10 @@ public:
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
     vector<double> getXY(double s, double d);
+    WaypointData ClosestWaypoint(double x, double y);
+    WaypointData NextWaypoint(double x, double y);
 
+    void calcSplineTrack();
 
 private:
     // The max s value before wrapping around the track back to 0

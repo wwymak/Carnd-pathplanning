@@ -24,7 +24,6 @@ public:
     vector<vector<CarPositonData>> getPredictedPaths();
     vector<CarPositonData> CalcPredictedPath(SensorFusionData initPosition);
     vector<vector<CarPositonData>> CalcAllPredictedPath();
-    vector<double> ConvertPathsToObstacles();
 
 
 };

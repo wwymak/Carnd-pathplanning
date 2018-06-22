@@ -2,13 +2,15 @@
 // Created by Wing Yee mak on 19/06/2018.
 //
 
+#include <iostream>
 #include "OtherVehicles.h"
-
+using namespace std;
 
 OtherVehicles::OtherVehicles() {}
 
 void OtherVehicles::setSensorFusionData(vector<SensorFusionData> sfData) {
     sensorFusionDataMap = sfData;
+    cout << "set sensor fusion"<< endl;
     setPredictedPaths();
 };
 
@@ -39,12 +41,16 @@ vector<CarPositonData> OtherVehicles::CalcPredictedPath(SensorFusionData initPos
 };
 
 vector<vector<CarPositonData>> OtherVehicles::CalcAllPredictedPath() {
+    cout << "calc predicted paths" << endl;
     vector<vector<CarPositonData>> allOtherVehicles;
     for (int i = 0; i< sensorFusionDataMap.size(); i++) {
         SensorFusionData initPosition = sensorFusionDataMap.at(i);
+//        cout << "ionit position"<< endl;
+//        cout<< initPosition.x<< "," << initPosition.y << ","<< initPosition.s << endl;
         vector<CarPositonData> pathPoints = CalcPredictedPath(initPosition);
         allOtherVehicles.push_back(pathPoints);
     }
+    cout << "here"<< allOtherVehicles.size()<< endl;
     return allOtherVehicles;
 };
 

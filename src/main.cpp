@@ -150,9 +150,13 @@ int main() {
                     }
                     otherVehicles.setSensorFusionData(sfArr);
 
-                    egoVehicle.updatePath(car, previous_path_x, previous_path_y);
-
+                    egoVehicle.updatePath(car, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                    cout << "trying to get path" << endl;
                     vector<double> next_x_vals = egoVehicle.getNextPathX();
+
+                    for (int i = 0; i< next_x_vals.size(); i++) {
+                        cout<< "next i vals" << next_x_vals.at(i)<< endl;
+                    }
                     vector<double> next_y_vals = egoVehicle.getNextPathY();
 
 //                    int prevpath_size = previous_path_x.size();

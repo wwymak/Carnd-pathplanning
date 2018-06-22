@@ -55,7 +55,7 @@ VectorXd Trajectory::QuinicPolynomialCoeffs(VectorXd startState, VectorXd endSta
     const auto s1_dot = endState(1);
     const auto s1_dotdot = endState(2);
 
-
+//    cout << "QuinicPolynomialCoeffs" << s0 << "," << s0_dot << "," << s0_dotdot<< ","<< s1<< ","<< s1_dot << "," << s1_dotdot<< endl;
 
     const auto a0 = s0;
     const auto a1 = s0_dot;
@@ -73,7 +73,6 @@ VectorXd Trajectory::QuinicPolynomialCoeffs(VectorXd startState, VectorXd endSta
 
     VectorXd b(3);
     b << s1 - a0 - a1 * T - a2 * T2, s1_dot - a1 - 2 * a2 * T , s1_dotdot - a2;
-
     VectorXd C = A.colPivHouseholderQr().solve(b);
     const auto a5 = C(0);
     const auto a4 = C(1);
@@ -81,7 +80,6 @@ VectorXd Trajectory::QuinicPolynomialCoeffs(VectorXd startState, VectorXd endSta
 
     VectorXd polycoeffs(6);
     polycoeffs << a0, a1, a2,a3, a4, a5;
-
     return polycoeffs;
 
 
@@ -95,7 +93,8 @@ VectorXd Trajectory::QuarticPolynomialCoeffs(VectorXd startState, VectorXd endSt
 
     const auto s1_dot = endState(0);
     const auto s1_dotdot = endState(1);
-
+//
+//    cout << "QuarticPolynomialCoeffs" << s0 << "," << s0_dot << "," << s0_dotdot<< ","<< s1_dot << "," << s1_dotdot<< endl;
 
 
     const auto a0 = s0;
@@ -111,11 +110,12 @@ VectorXd Trajectory::QuarticPolynomialCoeffs(VectorXd startState, VectorXd endSt
 
     VectorXd b(2);
     b << s1_dot -  a1  - 2 * a2 * T, s1_dotdot -  2 * a2;
+//    cout << "Quartic solver start" << endl;
     VectorXd C = A.colPivHouseholderQr().solve(b);
     const auto a3 = C(0);
     const auto a4 = C(1);
     VectorXd polycoeffs(6);
-
+//    cout << "Quartic solver end" << a0<< "," << a1<< "," << a2<< endl;
     polycoeffs << a0, a1, a2,a3, a4, 0;
 
     return polycoeffs;
@@ -136,7 +136,7 @@ VectorXd Trajectory::CalcPositionAt(VectorXd polycoeffs, double time) {
     const auto t4 = t3 * time;
     const auto t5 = t4 * time;
 
-    VectorXd position = VectorXd::Zero(3);
+    VectorXd position = VectorXd::Zero(4);
     position(0) = a0 + a1 * t + a2 * t2 + a3 * t3 + a4 * t4 + a5 * t5;
     position(1) = a1  + 2 * a2 * t + 3 * a3 * t2 + 4 * a4 * t3 + 5 * a5 * t4;
     position(2) = 2 * a2 + 3 * 2 * a3 * t + 12 * a4 * t2 + 20 * a5 * t3;
@@ -171,6 +171,7 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
 
 
             VectorXd pathcoeffs = QuinicPolynomialCoeffs(startState, endState, predDuration);
+//            cout<< "here"<< pathcoeffs.size()<< endl;
             for (int t= 0; t < timesteps.size(); t++) {
                 path_pos.push_back(CalcPositionAt(pathcoeffs, t));
             }
@@ -178,6 +179,8 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
             vector<double> d_dot (path_pos.size());
             vector<double> d_dotdot (path_pos.size());
             vector<double> d_dotdotdot(path_pos.size());
+//            cout << "here2" << path_pos.size() << endl;
+//            cout << "here3" << path_pos[0](0) << endl;
 
 
             for (int i = 0; i< path_pos.size(); i++) {
@@ -186,6 +189,7 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
                 d_dotdot[i] = path_pos[i](2);
                 d_dotdotdot[i] = path_pos[i](3);
             }
+
 
 
             //longitudinal veloctiy keeping
@@ -221,6 +225,8 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
                     s_dotdotdot[i] = path_pos_s[i](3);
                 }
 
+
+
                 FrenetPath fp;
 
                 fp.timesteps = timesteps;
@@ -232,9 +238,9 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
                 fp.s_dot = s_dot;
                 fp.s_dotdot = s_dotdot;
                 fp.s_dotdotdot = s_dotdotdot;
-
-                vector<size_t> jerk_s;
-                vector<size_t> jerk_d;
+//                cout << "here3, construct fp"<< endl;
+                vector<double> jerk_s(s_dotdotdot.size());
+                vector<double> jerk_d(s_dotdotdot.size());
                 transform(s_dotdotdot.begin(), s_dotdotdot.end(), jerk_s.begin(), [](double dotdotdot){
                     if(dotdotdot > MAX_JERK) {
                         return 1000 * dotdotdot * dotdotdot;
@@ -247,6 +253,7 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
                     }
                     return dotdotdot * dotdotdot;
                 });
+
 
                 double cost_jerk_s = accumulate(jerk_s.begin(), jerk_s.end(),0.0);
                 double cost_jerk_d = accumulate(jerk_d.begin(), jerk_d.end(),0.0);
@@ -265,7 +272,7 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
                 fp.cost_d = cost_d;
                 fp.cost_s = cost_v;
                 fp.cost_total = KLAT * cost_d + KLON *  cost_v;
-
+//                cout << "end one iter fo fp"<< endl;
 
                 fpaths.push_back(fp);
             }
@@ -275,6 +282,19 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
     }
 
     return fpaths;
+};
+
+FrenetPath Trajectory::GetOptimalPath(vector<FrenetPath> validPaths){
+    double mincost = numeric_limits<double>::infinity();
+    FrenetPath bestPath;
+    cout << validPaths.size()<< "valid paths" << endl;
+    for (int i = 0; i< validPaths.size(); i++) {
+        if ( mincost >= validPaths.at(i).cost_total) {
+            mincost = validPaths.at(i).cost_total;
+            bestPath = validPaths.at(i);
+        }
+    };
+    return bestPath;
 };
 
 //todo not quite correct yet
@@ -417,6 +437,9 @@ bool Trajectory::CheckNoCollision(vector<vector<CarPositonData>> obstacles, Fren
         for (int i= 0; i< path.s.size(); i++) {
             double dist_d = abs(path.d.at(i) - obs.at(i).d );
             double dist_s = abs(path.s.at(i) - obs.at(i).s );
+
+            cout << "dist d" << dist_d<< endl;
+            cout << "dist s" << dist_s<< endl;
             if (abs(path.d.at(i) - obs.at(i).d ) <= SAFE_DISTANCE_D  ) {
                 return false;
             } else if(dist_d > SAFE_DISTANCE_D && dist_d <= LANE_SEPARATION && dist_s <= SAFE_DISTANCE_S) {
