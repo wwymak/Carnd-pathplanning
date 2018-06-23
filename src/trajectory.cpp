@@ -152,8 +152,9 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
     for (int road_d_idx = 0; road_d_idx< int((MAX_ROAD_D - MIN_ROAD_D)/ D_ROAD_W) ; road_d_idx++) {
         double roadPosition_d = road_d_idx * D_ROAD_W + MIN_ROAD_D;
 
-        for (int timecounter = 0; timecounter < int((MAXT - MINT)/DT); timecounter ++) {
-            double predDuration = timecounter * DT + MINT;
+//        for (int timecounter = 0; timecounter < int((MAXT - MINT)/DT); timecounter ++) {
+            double predDuration = MAXT;
+//            double predDuration = timecounter * DT + MINT;
 
 
             vector<double> timesteps;
@@ -194,9 +195,14 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
 
             //longitudinal veloctiy keeping
 
-            for (int i = 0; i< int((TARGET_SPEED - MIN_TARGET_SPEED)/D_T_S) ; i++) {
-                double target_s = MIN_TARGET_SPEED + i * D_T_S;
+            for (int i = 0; i< min(30, int(abs(TARGET_SPEED - current_s_dot)/D_T_S)) ; i++) {
+                double target_s = current_s_dot;
 
+                if(current_s_dot < TARGET_SPEED) {
+                    target_s  += i * D_T_S;
+                } else if (current_s_dot > TARGET_SPEED) {
+                    target_s  -= i * D_T_S;
+                }
 
 
                 vector<VectorXd> path_pos_s;
@@ -278,7 +284,7 @@ vector<FrenetPath> Trajectory::GetFrenetPaths(double current_s,double current_s_
             }
 
 
-        }
+//        }
     }
 
     return fpaths;

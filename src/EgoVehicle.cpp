@@ -15,8 +15,8 @@ void EgoVehicle::updatePath(CarPositonData pos , vector<double> previous_path_x,
     if(prev_path_size > 2) {
         next_path_x.push_back(previous_path_x.at(prev_path_size -2));
         next_path_x.push_back(previous_path_x.at(prev_path_size -1));
-        next_path_y.push_back(previous_path_x.at(prev_path_size -2));
-        next_path_y.push_back(previous_path_x.at(prev_path_size -1));
+        next_path_y.push_back(previous_path_y.at(prev_path_size -2));
+        next_path_y.push_back(previous_path_y.at(prev_path_size -1));
     }
 
 //    cout << "ego vehicle update path"<< endl;
@@ -24,7 +24,7 @@ void EgoVehicle::updatePath(CarPositonData pos , vector<double> previous_path_x,
     //todo fix, don't htink it's quite correct
     //candidate paths => use prev path?
     vector<FrenetPath> candidatePaths =  trajectory.GetFrenetPaths(pos.s, pos.speed, 0.0, pos.d, 0, 0, 6);
-    cout << "candidate paths" << candidatePaths.size()<< endl;
+//    cout << "candidate paths" << candidatePaths.size()<< endl;
     vector<FrenetPath> validPaths = trajectory.GetValidPaths(candidatePaths);
     cout<< "valid paths calculated"<< validPaths.size()<< endl;
     FrenetPath bestPath = trajectory.GetOptimalPath(validPaths);
