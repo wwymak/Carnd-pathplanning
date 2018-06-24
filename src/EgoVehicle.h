@@ -9,27 +9,31 @@
 #include "datastructs.h"
 #include "trajectory.h"
 #include "waypoints.h"
+#include "LaneFSM.h"
+#include "Eigen-3.3/Eigen/Eigen"
+#include "Eigen-3.3/Eigen/Core"
 
+using namespace Eigen;
 using namespace std;
 
 class EgoVehicle {
 public:
-    vector<double> next_path_x;
-    vector<double> next_path_y;
+    EgoVehicle(Waypoints mWaypointsMap);
+    vector<double> m_next_path_x;
+    vector<double> m_next_path_y;
 
-    Trajectory trajectory;
 
+    void UpdatePath(CarPositonData pos , vector<double> previous_path_x, vector<double> previous_path_y);
 
-    void generateLaneChangePath();
-    void generateLaneKeepingPath();
-    void generateOptimalPath();
-
-    void updatePath(CarPositonData pos , vector<double> previous_path_x, vector<double> previous_path_y, const vector<double> maps_s, const vector<double> maps_x, const vector<double> maps_y);
-
-    vector<double> getNextPathX() {return next_path_x;};
-    vector<double> getNextPathY() { return next_path_y;};
+    vector<double> getNextPathX() {return m_next_path_x;};
+    vector<double> getNextPathY() { return m_next_path_y;};
 private:
-    Waypoints roadmap;
+    Waypoints mWaypointsMap;
+    LaneFSM fsm;
+    const double mMaxPredictTime = 2; //secs
+    VectorXd mCurrentState;
+    double mCurrentTime;
+    OtherVehicles otherVehicles;
 };
 
 
