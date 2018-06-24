@@ -10,6 +10,7 @@
 #include "vector"
 
 using namespace std;
+using namespace Eigen;
 
 struct SensorFusionData
 {
@@ -59,6 +60,14 @@ struct FrenetPath
     double cost_s;
     double cost_total;
 
+};
+
+struct FrenetTraj
+{
+	VectorXd startState;
+	VectorXd endState;
+	VectorXd sCoeffs;
+	VectorXd dCoeffs;
 };
 
 #endif //PATH_PLANNING_DATASTRUCTS_H

@@ -15,6 +15,7 @@ public:
     OtherVehicles();
     double duration;
     double timestep;
+
     vector<SensorFusionData> sensorFusionDataMap;
     vector<vector<CarPositonData>> predictedPaths;
 
