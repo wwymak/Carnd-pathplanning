@@ -5,6 +5,7 @@
 #ifndef PATH_PLANNING_ROADSTATE_H
 #define PATH_PLANNING_ROADSTATE_H
 #include "datastructs.h"
+#include "waypoints.h"
 #include <vector>
 #include <unordered_map>
 
@@ -15,13 +16,13 @@ public:
     RoadState();
 
 
-    void CalcInViewCars();
+    void CalcInViewCars(double ego_s,double ego_d,  double horizon);
 
-    void UpdateRoadState(vector<SensorFusionData> sfData);
+    void UpdateRoadState(vector<SensorFusionData> sfData, Waypoints wps);
 
     void PredictRoadNextState();
 private:
-    unordered_map <int, SensorFusionData> mAllCars; //stashing all the cars from sensorfusion here
+    unordered_map <int, CarPositonData> mAllCars; //stashing all the cars from sensorfusion here
     unordered_map <int, SensorFusionData> mInviewCars; //only care about cars in front (think about too close behind cars??)
 };
 

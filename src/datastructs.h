@@ -68,6 +68,8 @@ struct FrenetTraj
 	VectorXd endState;
 	VectorXd sCoeffs;
 	VectorXd dCoeffs;
+	double durationS;
+	double durationD;
 };
 
 #endif //PATH_PLANNING_DATASTRUCTS_H

@@ -18,6 +18,7 @@ class Waypoints {
 public:
 
     vector<WaypointData> waypointsList;
+    const double max_track_s = 6945.554;
 
     Waypoints();
 
@@ -34,7 +35,7 @@ public:
 
 private:
     // The max s value before wrapping around the track back to 0
-    const double max_track_s = 6945.554;
+
     tk::spline xspline;
     tk::spline yspline;
 };

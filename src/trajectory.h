@@ -23,9 +23,11 @@ public:
 
     Trajectory(const VectorXd& startStateX6, const VectorXd& endStateX6, double durationS, double durationD, double timeStart);
 
-    VectorXd QuinicPolynomialCoeffs(VectorXd startState, VectorXd endState, float T);
+    VectorXd QuinicPolynomialCoeffs(VectorXd startState, VectorXd endState, double T);
 
-    VectorXd QuarticPolynomialCoeffs(VectorXd startState, VectorXd endState, float T)
+    VectorXd QuarticPolynomialCoeffs(VectorXd startState, VectorXd endState, double T);
+
+    FrenetTraj TrajectoryS_Highspeed(VectorXd startState, VectorXd endState, double targetSpeed, double currentTime, double durationS, double durationD);
 
 private:
     double mDurationS;

@@ -51,15 +51,19 @@ void Waypoints::calcSplineTrack() {
     yspline.set_points(s, y);
 }
 
-//vector<double> Waypoints::getXY(double s, double d) {
-//    s = modulus(s , max_track_s);
-//
-//    double xpoint = xspline(s);
-//    double ypoint = y_spline(s);
-//    // normal vector
+vector<double> Waypoints::getXY(double s, double d) {
+    if (s > max_track_s) {
+        s = s - max_track_s;
+    }
+
+    double xpoint = xspline(s);
+    double ypoint = yspline(s);
+    // normal vector
 //    Point nv(-m_y_spline.deriv(1,s), m_x_spline.deriv(1,s));
 //    return pt + nv * d;
-//}
+
+    return {xpoint, ypoint};
+}
 
 //WaypointData Waypoints::ClosestWaypoint(double x, double y)
 //{

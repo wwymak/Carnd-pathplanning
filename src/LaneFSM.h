@@ -16,6 +16,8 @@ using namespace Eigen;
 class LaneFSM {
 public:
     FrenetPath OptimalPath(VectorXd currentState, double currentTime, OtherVehicles otherVehicles);
+
+//    void GenerateLaneKeeping();
 };
 
 

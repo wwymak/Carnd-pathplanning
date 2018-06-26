@@ -23,7 +23,7 @@ Trajectory::Trajectory(const VectorXd &startState, const VectorXd &endState, dou
 }
 
 
-VectorXd Trajectory::QuinicPolynomialCoeffs(VectorXd startState, VectorXd endState, float T){
+VectorXd Trajectory::QuinicPolynomialCoeffs(VectorXd startState, VectorXd endState, double T){
 
     const auto s0 = startState(0);
     const auto s0_dot = startState(1);
@@ -63,7 +63,7 @@ VectorXd Trajectory::QuinicPolynomialCoeffs(VectorXd startState, VectorXd endSta
 
 }
 
-VectorXd Trajectory::QuarticPolynomialCoeffs(VectorXd startState, VectorXd endState, float T){
+VectorXd Trajectory::QuarticPolynomialCoeffs(VectorXd startState, VectorXd endState, double T){
 
     const auto s0 = startState(0);
     const auto s0_dot = startState(1);
@@ -98,4 +98,19 @@ VectorXd Trajectory::QuarticPolynomialCoeffs(VectorXd startState, VectorXd endSt
 
     return polycoeffs;
 
+}
+
+FrenetTraj Trajectory::TrajectoryS_Highspeed(VectorXd startState, VectorXd endState, double targetSpeed, double currentTime, double durationS, double durationD) {
+    FrenetTraj fTraj;
+    VectorXd endForFitting(2);
+    endForFitting << targetSpeed, 0;
+
+    fTraj.sCoeffs = QuarticPolynomialCoeffs(startState,endForFitting , durationS);
+    fTraj.dCoeffs = QuinicPolynomialCoeffs(startState.tail(3), endState.tail(3), durationD);
+    fTraj.startState = startState;
+    fTraj.endState = endState;
+    fTraj.durationS = durationS;
+    fTraj.durationD = durationD;
+
+    return fTraj;
 }

@@ -10,8 +10,7 @@ OtherVehicles::OtherVehicles() {}
 
 void OtherVehicles::setSensorFusionData(vector<SensorFusionData> sfData) {
     sensorFusionDataMap = sfData;
-    cout << "set sensor fusion"<< endl;
-    setPredictedPaths();
+//    setPredictedPaths();
 };
 
 void OtherVehicles::setPredictedPaths() {
@@ -41,7 +40,6 @@ vector<CarPositonData> OtherVehicles::CalcPredictedPath(SensorFusionData initPos
 };
 
 vector<vector<CarPositonData>> OtherVehicles::CalcAllPredictedPath() {
-    cout << "calc predicted paths" << endl;
     vector<vector<CarPositonData>> allOtherVehicles;
     for (int i = 0; i< sensorFusionDataMap.size(); i++) {
         SensorFusionData initPosition = sensorFusionDataMap.at(i);
