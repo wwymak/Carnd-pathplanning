@@ -5,6 +5,7 @@
 #include "RoadState.h"
 
 void RoadState::UpdateRoadState(vector<SensorFusionData> sfData, Waypoints wps) {
+    mAllCars.clear();
     for (int i = 0; i< sfData.size(); i++) {
         SensorFusionData sfd = sfData.at(i);
         int id = sfd.id;
@@ -25,7 +26,38 @@ void RoadState::UpdateRoadState(vector<SensorFusionData> sfData, Waypoints wps) 
 
 }
 
-void RoadState::CalcInViewCars(double ego_s, double ego_d, double horizon) {
+void RoadState::CalcInViewCars(CarPositonData egoVehicle, double deltaT) {
+    mInviewCars.clear();
+    mInviewCarsLaneLeft.clear();
+    mInviewCarsLaneRight.clear();
+    int egoLane = Utils::ConvertDToLane(egoVehicle.d);
+    double egoHorizonS = egoVehicle.s * deltaT;
+    for ( auto it = mAllCars.begin(); it != mAllCars.end(); ++it ) {
+        int id = it->first;
+        CarPositonData otherCar = it->second;
+        double otherCar_S_Horizon = otherCar.s + otherCar.speed * deltaT;
+        int otherCarD =Utils::ConvertDToLane(otherCar.d);
+        if (otherCarD < 0) {
+            continue;
+        }
+        if(otherCar.s > egoVehicle.s && otherCar.s - egoVehicle.s <= egoHorizonS) {
+            if(otherCarD == egoLane) {
+                mInviewCars[id] = otherCar;
+            } else if(otherCarD - egoLane == 1) {
+                mInviewCarsLaneRight[id] = otherCar;
+            } else if(otherCarD - egoLane == -1) {
+                mInviewCarsLaneLeft[id] = otherCar;
+            }
+        }
 
+//        if( (otherCarD == egoLane) && otherCar_S_Horizon > egoHorizonS && otherCar.s - egoHorizonS <= egoHorizonS) {
+//            mInviewCars[id] = otherCar;
+//        }
+//        else if((otherCarD - egoLane == 1) && otherCar_S_Horizon > egoHorizonS && otherCar.s - egoHorizonS <= egoHorizonS) {
+//            mInviewCarsLaneRight[id] = otherCar;
+//        } else if((otherCarD - egoLane == -1) && otherCar_S_Horizon > egoHorizonS && otherCar_S_Horizon - egoHorizonS <= egoHorizonS) {
+//            mInviewCarsLaneLeft[id] = otherCar;
+//        }
+    }
 };
 

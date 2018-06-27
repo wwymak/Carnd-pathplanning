@@ -23,6 +23,8 @@ public:
     const double D_T_S = 0.5;   //target speed sampling length [m/s]
     const double N_S_SAMPLE = 1 ;  // sampling number of target speed
     const double SAFE_DISTANCE = MAX_SPEED * 2; //aka the 2 second rule
+
+    static int ConvertDToLane(double d);
 };
 
 

@@ -10,6 +10,7 @@
 #include "Eigen-3.3/Eigen/Eigen"
 #include "Eigen-3.3/Eigen/Core"
 #include "OtherVehicles.h"
+#include "RoadState.h"
 
 using namespace Eigen;
 
@@ -17,7 +18,11 @@ class LaneFSM {
 public:
     FrenetPath OptimalPath(VectorXd currentState, double currentTime, OtherVehicles otherVehicles);
 
+    int CanChangeLane();
+
 //    void GenerateLaneKeeping();
+private:
+    RoadState rs;
 };
 
 

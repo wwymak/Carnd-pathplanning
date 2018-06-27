@@ -12,6 +12,7 @@
 #include "spline.h"
 #include "RoadState.h"
 #include "waypoints.h"
+#include "LaneFSM.h"
 
 using namespace std;
 
@@ -21,6 +22,7 @@ using json = nlohmann::json;
 
 const int NUM_PRED_WAYPOINTS = 50;
 const double MAX_SPEED = 49;
+const double timeHorizon = 2.5;//s
 int lane = 1;
 double ref_speed = 0;
 
@@ -44,6 +46,7 @@ int main() {
 
     RoadState roadState;
     Waypoints wps;
+    LaneFSM laneFSM;
 
     // Load up map values for waypoint's x,y,s and d normalized normal vectors
     vector<double> map_waypoints_x;
@@ -128,6 +131,7 @@ int main() {
                         sfArr.push_back(sf);
                     }
                     roadState.UpdateRoadState(sfArr, wps);
+                    roadState.CalcInViewCars(car_s, car_d, car_speed * timeHorizon);
 
                     json msgJson;
 
@@ -181,7 +185,7 @@ int main() {
                         cout << ref_speed<< "ref speed"<< endl;
 //                        }
 
-
+                        int laneChangeAvailable = laneFSM.CanChangeLane();
                         if (lane > 0) {
                             lane = lane -1;
                         } else if (lane < 2){
