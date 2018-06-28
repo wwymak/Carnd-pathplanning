@@ -4,7 +4,7 @@
 
 #include "Utils.h"
 
-static int Utils::ConvertDToLane(double d){
+int Utils::ConvertDToLane(double d){
     if(d < 0 || d> 12) {
         return -1;
     }

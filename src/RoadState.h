@@ -17,9 +17,9 @@ public:
     RoadState();
 
 
-    void CalcInViewCars(CarPositonData egoVehicle,  double deltaT);
+    void CalcInViewCars(CarPositonData& egoVehicle,  double deltaT);
 
-    void UpdateRoadState(vector<SensorFusionData> sfData, Waypoints wps);
+    void UpdateRoadState(vector<SensorFusionData>& sfData, Waypoints& wps);
 
     unordered_map <int, CarPositonData> GetInviewCars() {return mInviewCars;};
     unordered_map <int, CarPositonData> GetInviewCarsLaneLeft() {return mInviewCarsLaneLeft;};

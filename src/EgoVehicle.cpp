@@ -3,8 +3,10 @@
 
 using namespace std;
 
-EgoVehicle::EgoVehicle(Waypoints mWaypointsMap)
+EgoVehicle::EgoVehicle(Waypoints& mWaypointsMap, LaneFSM& fsm, OtherVehicles& otherVehicles)
         :mWaypointsMap(mWaypointsMap),
+        fsm(fsm),
+         otherVehicles(otherVehicles),
          mCurrentTime(0),
          mCurrentState(VectorXd::Zero(6))
 {

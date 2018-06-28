@@ -16,13 +16,14 @@ using namespace Eigen;
 
 class LaneFSM {
 public:
+    LaneFSM(RoadState& rs);
     FrenetPath OptimalPath(VectorXd currentState, double currentTime, OtherVehicles otherVehicles);
 
     int CanChangeLane();
 
 //    void GenerateLaneKeeping();
 private:
-    RoadState rs;
+    RoadState& rs;
 };
 
 

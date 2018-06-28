@@ -13,6 +13,7 @@
 #include "RoadState.h"
 #include "waypoints.h"
 #include "LaneFSM.h"
+#include "datastructs.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ int main() {
 
     RoadState roadState;
     Waypoints wps;
-    LaneFSM laneFSM;
+    LaneFSM laneFSM(roadState);
 
     // Load up map values for waypoint's x,y,s and d normalized normal vectors
     vector<double> map_waypoints_x;
@@ -82,7 +83,7 @@ int main() {
         map_waypoints_dy.push_back(d_y);
     }
 
-    h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    h.onMessage([&laneFSM, &roadState, &wps, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                                                                                                          uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -102,12 +103,15 @@ int main() {
                     // j[1] is the data JSON object
 
                     // Main car's localization Data
-                    double car_x = j[1]["x"];
-                    double car_y = j[1]["y"];
-                    double car_s = j[1]["s"];
-                    double car_d = j[1]["d"];
-                    double car_yaw = j[1]["yaw"];
-                    double car_speed = j[1]["speed"];
+                    CarPositonData mVehicle;
+                    // Main car's localization Data
+                    mVehicle.x = j[1]["x"];
+                    mVehicle.y = j[1]["y"];
+                    mVehicle.s = j[1]["s"];
+                    mVehicle.d = j[1]["d"];
+                    mVehicle.yaw = j[1]["yaw"];
+                    mVehicle.speed = j[1]["speed"];
+
 
                     // Previous path data given to the Planner
                     auto previous_path_x = j[1]["previous_path_x"];
@@ -131,7 +135,8 @@ int main() {
                         sfArr.push_back(sf);
                     }
                     roadState.UpdateRoadState(sfArr, wps);
-                    roadState.CalcInViewCars(car_s, car_d, car_speed * timeHorizon);
+                    roadState.CalcInViewCars(mVehicle, timeHorizon);
+
 
                     json msgJson;
 
@@ -146,13 +151,13 @@ int main() {
                     vector<double> pts_x;
                     vector<double> pts_y;
 
-                    double ref_x = car_x;
-                    double ref_y = car_y;
-                    double ref_yaw = deg2rad(car_yaw);
-                    double ref_s = car_s;
+                    double ref_x = mVehicle.x;
+                    double ref_y = mVehicle.y;
+                    double ref_yaw = deg2rad(mVehicle.yaw);
+                    double ref_s = mVehicle.s;
 
-                    double ref_x_prev = car_x - cos(ref_yaw);
-                    double ref_y_prev = car_y - sin(ref_yaw);
+                    double ref_x_prev = mVehicle.x - cos(ref_yaw);
+                    double ref_y_prev = mVehicle.y - sin(ref_yaw);
 
                     float ref_other_speed_collide = MAX_SPEED;
 
@@ -179,18 +184,20 @@ int main() {
                     if (too_close == true && ref_speed > ref_other_speed_collide) {
                         cout << "too close here"<< endl;
                         cout << "ref_other_speed_collide"<< ref_other_speed_collide<< endl;
-//                        ref_speed -= 1.5;
-//                        while (ref_speed > ref_other_speed_collide){
-                        ref_speed -= 0.5;
-                        cout << ref_speed<< "ref speed"<< endl;
-//                        }
 
                         int laneChangeAvailable = laneFSM.CanChangeLane();
-                        if (lane > 0) {
+                        cout << "lane change?" << laneChangeAvailable<<endl;
+                        if (lane > 0 && (laneChangeAvailable == 3 || laneChangeAvailable ==2) ) {
                             lane = lane -1;
-                        } else if (lane < 2){
+                        } else if (lane < 2 && (laneChangeAvailable == 1|| laneChangeAvailable == 3)){
                             lane = lane + 1;
+                        } else {
+                            ref_speed -= 0.5;
+                            cout << ref_speed<< "ref speed, lane keeping"<< endl;
                         }
+//                        }
+
+
                     } else if(ref_speed < MAX_SPEED - 0.2) {
 //                        cout << ref_speed<< "ref speed add"<< endl;
                         ref_speed += 0.2;

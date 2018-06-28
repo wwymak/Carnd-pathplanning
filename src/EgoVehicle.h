@@ -18,7 +18,7 @@ using namespace std;
 
 class EgoVehicle {
 public:
-    EgoVehicle(Waypoints mWaypointsMap);
+    EgoVehicle(Waypoints& mWaypointsMap, LaneFSM& fsm, OtherVehicles& otherVehicles);
     vector<double> m_next_path_x;
     vector<double> m_next_path_y;
 
@@ -28,12 +28,12 @@ public:
     vector<double> getNextPathX() {return m_next_path_x;};
     vector<double> getNextPathY() { return m_next_path_y;};
 private:
-    Waypoints mWaypointsMap;
-    LaneFSM fsm;
+    Waypoints& mWaypointsMap;
+    LaneFSM& fsm;
     const double mMaxPredictTime = 2; //secs
     VectorXd mCurrentState;
     double mCurrentTime;
-    OtherVehicles otherVehicles;
+    OtherVehicles& otherVehicles;
 };
 
 
