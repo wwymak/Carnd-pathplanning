@@ -21,6 +21,8 @@ public:
 
     int CanChangeLane();
 
+    void LaneKeeping();
+
 //    void GenerateLaneKeeping();
 private:
     RoadState& rs;

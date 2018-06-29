@@ -10,15 +10,15 @@
 LaneFSM::LaneFSM(RoadState& rs) :rs(rs) {}
 
 int LaneFSM::CanChangeLane() {
-    unordered_map <int, CarPositonData> mInviewCarsLaneLeft = rs.GetInviewCarsLaneLeft();
-    unordered_map <int, CarPositonData> mInviewCarsLaneRight = rs.GetInviewCarsLaneRight();
+    unordered_map <int, CarPositonData> mInviewCarsLaneLeft = rs.mInviewCarsLaneLeft;
+    unordered_map <int, CarPositonData> mInviewCarsLaneRight = rs.mInviewCarsLaneRight;
 
-    cout << mInviewCarsLaneLeft.size() <<","<< mInviewCarsLaneRight.size()<< endl;
+    cout<< "can change lane " << mInviewCarsLaneLeft.size() <<","<< mInviewCarsLaneRight.size()<< endl;
     if(mInviewCarsLaneLeft.empty() && mInviewCarsLaneRight.empty()){
         return 3;
-    }else if(mInviewCarsLaneLeft.empty() == 0){
+    }else if(mInviewCarsLaneLeft.empty()){
         return 2;
-    }else if(mInviewCarsLaneRight.empty() == 0){
+    }else if(mInviewCarsLaneRight.empty()){
         return 1;
     } else {
         return 0;

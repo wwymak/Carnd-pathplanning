@@ -21,12 +21,12 @@ public:
 
     void UpdateRoadState(vector<SensorFusionData>& sfData, Waypoints& wps);
 
-    unordered_map <int, CarPositonData> GetInviewCars() {return mInviewCars;};
-    unordered_map <int, CarPositonData> GetInviewCarsLaneLeft() {return mInviewCarsLaneLeft;};
-    unordered_map <int, CarPositonData> GetInviewCarsLaneRight() {return mInviewCarsLaneRight;};
+//    unordered_map <int, CarPositonData> GetInviewCars() {return mInviewCars;};
+//    unordered_map <int, CarPositonData> GetInviewCarsLaneLeft() {return mInviewCarsLaneLeft;};
+//    unordered_map <int, CarPositonData> GetInviewCarsLaneRight() {return mInviewCarsLaneRight;};
 
     void PredictRoadNextState();
-private:
+
     unordered_map <int, CarPositonData> mAllCars; //stashing all the cars from sensorfusion here
     unordered_map <int, CarPositonData> mInviewCars; //only care about cars in front (think about too close behind cars??)
     unordered_map <int, CarPositonData> mInviewCarsLaneLeft; //only care about cars in front (think about too close behind cars??)

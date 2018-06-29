@@ -26,6 +26,7 @@ void RoadState::UpdateRoadState(vector<SensorFusionData>& sfData, Waypoints& wps
     }
 
 
+
 }
 
 void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
@@ -33,17 +34,20 @@ void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
     mInviewCarsLaneLeft.clear();
     mInviewCarsLaneRight.clear();
     int egoLane = Utils::ConvertDToLane(egoVehicle.d);
-    double egoHorizonS = egoVehicle.s * deltaT;
-    cout << "eoghorixon"<< egoVehicle.s<< deltaT;
+    double egoHorizonS = egoVehicle.s +  egoVehicle.speed * deltaT;
+
     for ( auto it = mAllCars.begin(); it != mAllCars.end(); ++it ) {
         int id = it->first;
         CarPositonData otherCar = it->second;
         double otherCar_S_Horizon = otherCar.s + otherCar.speed * deltaT;
         int otherCarD =Utils::ConvertDToLane(otherCar.d);
+//        cout << "other car d"<< otherCar.d<< endl;
         if (otherCarD < 0) {
             continue;
         }
-        if((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon)) {
+//        if(egoHorizonS >otherCar_S_Horizon) {
+        if(((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon)) || ((otherCar.s <= egoVehicle.s) &&  (egoHorizonS <otherCar_S_Horizon))) {
+//            cout << "eoghorixon"<< egoVehicle.s<< deltaT<<endl;
             if(otherCarD == egoLane) {
                 mInviewCars[id] = otherCar;
             } else if(otherCarD - egoLane == 1) {

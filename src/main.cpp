@@ -110,7 +110,7 @@ int main() {
                     mVehicle.s = j[1]["s"];
                     mVehicle.d = j[1]["d"];
                     mVehicle.yaw = j[1]["yaw"];
-                    mVehicle.speed = j[1]["speed"];
+                    mVehicle.speed = mileph2meterps(j[1]["speed"]);
 
 
                     // Previous path data given to the Planner
