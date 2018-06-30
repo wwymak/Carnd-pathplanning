@@ -11,7 +11,7 @@ void RoadState::UpdateRoadState(vector<SensorFusionData>& sfData, Waypoints& wps
     for (int i = 0; i< sfData.size(); i++) {
         SensorFusionData sfd = sfData.at(i);
         int id = sfd.id;
-        double speed = sqrt(sfd.x * sfd.x + sfd.y + sfd.y);
+        double speed = sqrt(sfd.vx * sfd.vx + sfd.vy + sfd.vy);
         CarPositonData c;
         c.speed = speed;
         c.id = id;
@@ -46,6 +46,7 @@ void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
             continue;
         }
 //        if(egoHorizonS >otherCar_S_Horizon) {
+//        if(((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon))) {
         if(((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon)) || ((otherCar.s <= egoVehicle.s) &&  (egoHorizonS <otherCar_S_Horizon))) {
 //            cout << "eoghorixon"<< egoVehicle.s<< deltaT<<endl;
             if(otherCarD == egoLane) {

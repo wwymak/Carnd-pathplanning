@@ -11,6 +11,7 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "OtherVehicles.h"
 #include "RoadState.h"
+#include "trajectory.h"
 
 using namespace Eigen;
 
@@ -21,7 +22,7 @@ public:
 
     int CanChangeLane();
 
-    void LaneKeeping();
+    void LaneKeeping(CarPositonData& egoVehicle);
 
 //    void GenerateLaneKeeping();
 private:

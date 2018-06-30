@@ -24,3 +24,16 @@ int LaneFSM::CanChangeLane() {
         return 0;
     }
 }
+
+void LaneFSM::LaneKeeping(CarPositonData& egoVehicle) {
+    unordered_map <int, CarPositonData> mInviewCarsFront = rs.mInviewCars;
+    VectorXd egoStartState(6);
+    VectorXd egoEndState(6);
+    egoStartState << egoVehicle.s, egoVehicle.speed, 0, egoVehicle.d, 0,0;
+    if(mInviewCarsFront.size() >0) {
+        //todo generate lane changing
+    } else {
+        //todo lanekeeping
+        //todo generate lane keeping path
+    }
+}
