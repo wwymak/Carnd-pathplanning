@@ -65,6 +65,32 @@ vector<double> Waypoints::getXY(double s, double d) {
     return {xpoint, ypoint};
 }
 
+vector<double> Waypoints::getXYSimple(double s, double d)
+{
+    int prev_wp = -1;
+
+    while(s > waypointsList[prev_wp+1].s && (prev_wp < (int)(waypointsList.size()-1) ))
+    {
+        prev_wp++;
+    }
+
+    int wp2 = (prev_wp+1)%waypointsList.size();
+
+    double heading = atan2((waypointsList[wp2].y- waypointsList[prev_wp].y),(waypointsList[wp2].x - waypointsList[prev_wp].x));
+    // the x,y,s along the segment
+    double seg_s = (s - waypointsList[prev_wp].s);
+
+    double seg_x = waypointsList[prev_wp].x+seg_s*cos(heading);
+    double seg_y = waypointsList[prev_wp].y + seg_s*sin(heading);
+
+    double perp_heading = heading-pi()/2;
+
+    double x = seg_x + d*cos(perp_heading);
+    double y = seg_y + d*sin(perp_heading);
+
+    return {x,y};
+
+}
 //WaypointData Waypoints::ClosestWaypoint(double x, double y)
 //{
 //

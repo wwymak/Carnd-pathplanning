@@ -12,21 +12,29 @@
 #include "OtherVehicles.h"
 #include "RoadState.h"
 #include "trajectory.h"
+#include "waypoints.h"
 
 using namespace Eigen;
 
 class LaneFSM {
 public:
-    LaneFSM(RoadState& rs);
+
+    vector<double> next_x_path;
+    vector<double> next_y_path;
+
+    LaneFSM(RoadState& rs, Waypoints& wps);
     FrenetPath OptimalPath(VectorXd currentState, double currentTime, OtherVehicles otherVehicles);
 
     int CanChangeLane();
 
-    void LaneKeeping(CarPositonData& egoVehicle);
+    bool ShouldPrepareChange();
+
+    void LaneKeeping(CarPositonData& egoVehicle, double predictionTimeWindow);
 
 //    void GenerateLaneKeeping();
 private:
     RoadState& rs;
+    Waypoints& wps;
 };
 
 

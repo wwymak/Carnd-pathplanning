@@ -14,6 +14,7 @@
 #include "waypoints.h"
 #include "LaneFSM.h"
 #include "datastructs.h"
+#include "trajectory.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ using json = nlohmann::json;
 
 const int NUM_PRED_WAYPOINTS = 50;
 const double MAX_SPEED = 49;
-const double timeHorizon = 2.5;//s
+const double timeHorizon = 2.0;//s
 int lane = 1;
 double ref_speed = 0;
 
@@ -47,7 +48,8 @@ int main() {
 
     RoadState roadState;
     Waypoints wps;
-    LaneFSM laneFSM(roadState);
+    LaneFSM laneFSM(roadState, wps);
+    Trajectory trajectory;
 
     // Load up map values for waypoint's x,y,s and d normalized normal vectors
     vector<double> map_waypoints_x;
@@ -83,7 +85,7 @@ int main() {
         map_waypoints_dy.push_back(d_y);
     }
 
-    h.onMessage([&laneFSM, &roadState, &wps, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    h.onMessage([&trajectory, &laneFSM, &roadState, &wps, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                                                                                                          uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
@@ -114,11 +116,19 @@ int main() {
 
 
                     // Previous path data given to the Planner
-                    auto previous_path_x = j[1]["previous_path_x"];
-                    auto previous_path_y = j[1]["previous_path_y"];
+                    vector<double> previous_path_x = j[1]["previous_path_x"];
+                    vector<double> previous_path_y = j[1]["previous_path_y"];
+//                    auto previous_path_x = j[1]["previous_path_x"];
+//                    auto previous_path_y = j[1]["previous_path_y"];
                     // Previous path's end s and d values
                     double end_path_s = j[1]["end_path_s"];
                     double end_path_d = j[1]["end_path_d"];
+
+                    TrajectoryStandard trajPrev;
+                    trajPrev.x_pts = previous_path_x;
+                    trajPrev.y_pts = previous_path_y;
+                    trajPrev.path_end_s = end_path_s;
+                    trajPrev.path_end_d = end_path_d;
 
                     // Sensor Fusion Data, a list of all other cars on the same side of the road.
                     auto sensor_fusion = j[1]["sensor_fusion"];
@@ -137,53 +147,48 @@ int main() {
                     roadState.UpdateRoadState(sfArr, wps);
                     roadState.CalcInViewCars(mVehicle, timeHorizon);
 
+                    bool shouldChangeLane = laneFSM.ShouldPrepareChange();
+
+
+//                    laneFSM.LaneKeeping(mVehicle, timeHorizon);
+
 
                     json msgJson;
 
-                    int prevpath_size = previous_path_x.size();
+//                    msgJson["next_x"] = laneFSM.next_x_path;
+//                    msgJson["next_y"] = laneFSM.next_y_path;
+
+//                    int prevpath_size = previous_path_x.size();
                     double horizon_x = 30.0;
                     bool too_close = false;
                     double too_close_other_car_s = 100;
+//
+//
+//                    vector<double> next_x_vals;
+//                    vector<double> next_y_vals;
+//                    vector<double> pts_x;
+//                    vector<double> pts_y;
+//
+//                    double ref_x = mVehicle.x;
+//                    double ref_y = mVehicle.y;
+//                    double ref_yaw = deg2rad(mVehicle.yaw);
+//                    double ref_s = mVehicle.s;
+//
+//                    double ref_x_prev = mVehicle.x - cos(ref_yaw);
+//                    double ref_y_prev = mVehicle.y - sin(ref_yaw);
+//
+//                    float ref_other_speed_collide = MAX_SPEED;
+//
+//                    if(ref_yaw > deg2rad(25)) {
+//                        ref_yaw = deg2rad(25);
+//                    }
+//
 
-
-                    vector<double> next_x_vals;
-                    vector<double> next_y_vals;
-                    vector<double> pts_x;
-                    vector<double> pts_y;
-
-                    double ref_x = mVehicle.x;
-                    double ref_y = mVehicle.y;
-                    double ref_yaw = deg2rad(mVehicle.yaw);
-                    double ref_s = mVehicle.s;
-
-                    double ref_x_prev = mVehicle.x - cos(ref_yaw);
-                    double ref_y_prev = mVehicle.y - sin(ref_yaw);
-
-                    float ref_other_speed_collide = MAX_SPEED;
-
-                    if(ref_yaw > deg2rad(25)) {
-                        ref_yaw = deg2rad(25);
-                    }
-
-                    for (int i = 0; i < sensor_fusion.size(); i++) {
-                        float d = sensor_fusion.at(i).at(6);
-                        // if other car is in our lane:
-                        if (d > (2 + 4 * lane -2) && d < (2 + 4 * lane + 2)) {
-                            double vx = sensor_fusion.at(i).at(3);
-                            double vy = sensor_fusion.at(i).at(4);
-                            double other_speed = sqrt(vx * vx + vy * vy);
-                            double other_car_s = sensor_fusion.at(i).at(5);
-                           if((other_car_s > ref_s) && ((other_car_s - ref_s) < horizon_x)) {
-                                too_close = true;
-                                ref_other_speed_collide = other_speed;
-                            }
-                        }
-                    }
-
-
-                    if (too_close == true && ref_speed > ref_other_speed_collide) {
+//
+//
+//                    if (too_close == true) {
+                    if (shouldChangeLane == true) {
                         cout << "too close here"<< endl;
-                        cout << "ref_other_speed_collide"<< ref_other_speed_collide<< endl;
 
                         int laneChangeAvailable = laneFSM.CanChangeLane();
                         cout << "lane change?" << laneChangeAvailable<<endl;
@@ -205,95 +210,109 @@ int main() {
                         ref_speed -= 0.5;
                     }
 
-//                    cout<< "here"<< endl;
+                    TrajectoryStandard splineTraj = trajectory.CalcSplineTraj(trajPrev, mVehicle, wps, ref_speed, lane);
 
-                    if (prevpath_size >=  2) {
-                        ref_x = previous_path_x[prevpath_size -1];
-                        ref_y = previous_path_y[prevpath_size -1];
+                    msgJson["next_x"] = splineTraj.x_pts;
+                    msgJson["next_y"] = splineTraj.y_pts;
 
-                        ref_x_prev = previous_path_x[prevpath_size -2];
-                        ref_y_prev = previous_path_y[prevpath_size -2];
-
-                        ref_yaw = atan2((ref_y - ref_y_prev), (ref_x - ref_x_prev));
-                        ref_s = end_path_s;
-
-                    }
-
-                    pts_x.push_back(ref_x_prev);
-                    pts_x.push_back(ref_x);
-
-                    pts_y.push_back(ref_y_prev);
-                    pts_y.push_back(ref_y);
-
-
-                    // getting a largely spaced waypoints to fit spline
-                    for (int i = 1; i < 4; i++) {
-                        vector<double> next_wp= getXY((ref_s + (i * 30)), (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-//                        if (next_wp[0] > pts_x.at(1)){
-                        pts_x.push_back(next_wp[0]);
-                        pts_y.push_back(next_wp[1]);
-//                        }
-                    }
-                    vector<double> fitpts_x;
-                    vector<double> fitpts_y;
-                    for (int i = 0; i< pts_x.size(); i++) {
-                        double shifted_x = pts_x.at(i) - ref_x;
-                        double shifted_y = pts_y.at(i) - ref_y;
-//                        cout << i << "ref:" << ref_x << ","<< ref_y<< "x, y:"<<pts_x.at(i)<< ","<< pts_y.at(i)<<  endl;
-//                        cout << "shifted"<< shifted_x << "," << shifted_y<< endl;
-                        double converted_x = shifted_x * cos(0 - ref_yaw) - shifted_y * sin(0 -ref_yaw);
-                        double converted_y = shifted_x * sin(0 - ref_yaw) + shifted_y * cos(0 -ref_yaw);
-                        if (i == 0 || converted_x > fitpts_x.at(i -1)){
-                            fitpts_x.push_back(converted_x);
-                            fitpts_y.push_back(converted_y);
-                        } else {
-                            cout << "weird points!?" << converted_x << ","<< fitpts_x.at(i -1)<< endl;
-                        }
-//                        pts_x.at(i) = shifted_x * cos(0 - ref_yaw) - shifted_y * sin(0 -ref_yaw);
-//                        pts_y.at(i) = shifted_x * sin(0 - ref_yaw) + shifted_y * cos(0 -ref_yaw);
-//                        cout << i<< ":"<<"(" << pts_x.at(i)<< "," << pts_y.at(i)<< ")" << " ref yaw "<< rad2deg(ref_yaw)<< endl;
-                    }
-
-                    tk::spline s;
-                    //set anchor points for spline
-                    s.set_points(fitpts_x, fitpts_y);
-
-                    //add points remaining from previous path (path planning points)
-                    for (int i = 0; i < prevpath_size; i++) {
-                        next_x_vals.push_back(previous_path_x[i]);
-                        next_y_vals.push_back(previous_path_y[i]);
-                    }
-
-
-
-                    double horizon_y = s(horizon_x);
-
-                    double target_d =  sqrt(horizon_x *  horizon_x + horizon_y * horizon_y);
-//                    double N = target_d / ( mileph2meterps(MAX_SPEED) * 0.02);
-                    double x_sum_prev = 0; // the distance in x covered by previous points
-
-                    for (int i = 0; i< 50 - prevpath_size; i++) {
-                        double N = target_d / ( ref_speed * 0.02 / 2.24);
-                        double x_point = x_sum_prev + horizon_x / N;
-                        double y_point = s(x_point);
-
-                        double x_ref = x_point;
-                        double y_ref = y_point;
-
-                        x_sum_prev = x_point;
-
-                        x_point = (x_ref * cos(ref_yaw) - y_ref * sin(ref_yaw));
-                        y_point = (x_ref * sin(ref_yaw) + y_ref * cos(ref_yaw));
 //
-//                        x_point += ref_x;
-//                        y_point += ref_y;
+////                    cout<< "here"<< endl;
+//
+//                    if (prevpath_size >=  2) {
+//                        ref_x = previous_path_x[prevpath_size -1];
+//                        ref_y = previous_path_y[prevpath_size -1];
+//
+//                        ref_x_prev = previous_path_x[prevpath_size -2];
+//                        ref_y_prev = previous_path_y[prevpath_size -2];
+//
+//                        ref_yaw = atan2((ref_y - ref_y_prev), (ref_x - ref_x_prev));
+//                        ref_s = end_path_s;
+//
+//                    }
+//
+//                    pts_x.push_back(ref_x_prev);
+//                    pts_x.push_back(ref_x);
+//
+//                    pts_y.push_back(ref_y_prev);
+//                    pts_y.push_back(ref_y);
+//
+//
+//                    // getting a largely spaced waypoints to fit spline
+//                    for (int i = 1; i < 4; i++) {
+//                        vector<double> next_wp= getXY((ref_s + (i * 30)), (2 + 4 * lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+////                        if (next_wp[0] > pts_x.at(1)){
+//                        pts_x.push_back(next_wp[0]);
+//                        pts_y.push_back(next_wp[1]);
+////                        }
+//                    }
+//                    vector<double> fitpts_x;
+//                    vector<double> fitpts_y;
+//                    for (int i = 0; i< pts_x.size(); i++) {
+//                        double shifted_x = pts_x.at(i) - ref_x;
+//                        double shifted_y = pts_y.at(i) - ref_y;
+//                        double converted_x = shifted_x * cos(0 - ref_yaw) - shifted_y * sin(0 -ref_yaw);
+//                        double converted_y = shifted_x * sin(0 - ref_yaw) + shifted_y * cos(0 -ref_yaw);
+//                        if (i == 0 || converted_x > fitpts_x.at(i -1)){
+//                            fitpts_x.push_back(converted_x);
+//                            fitpts_y.push_back(converted_y);
+//                        } else {
+//                            cout << "weird points!?" << converted_x << ","<< fitpts_x.at(i -1)<< endl;
+//                        }
+//                    }
+//
+//                    tk::spline s;
+//                    //set anchor points for spline
+//                    s.set_points(fitpts_x, fitpts_y);
+//
+//                    //add points remaining from previous path (path planning points)
+//                    for (int i = 0; i < prevpath_size; i++) {
+//                        next_x_vals.push_back(previous_path_x[i]);
+//                        next_y_vals.push_back(previous_path_y[i]);
+//                    }
+//
+//
+//
+//                    double horizon_y = s(horizon_x);
+//
+//                    double target_d =  sqrt(horizon_x *  horizon_x + horizon_y * horizon_y);
+////                    double N = target_d / ( mileph2meterps(MAX_SPEED) * 0.02);
+//                    double x_sum_prev = 0; // the distance in x covered by previous points
+//
+//                    for (int i = 0; i< 50 - prevpath_size; i++) {
+//                        double N = target_d / ( ref_speed * 0.02 / 2.24);
+//                        double x_point = x_sum_prev + horizon_x / N;
+//                        double y_point = s(x_point);
+//
+//                        double x_ref = x_point;
+//                        double y_ref = y_point;
+//
+//                        x_sum_prev = x_point;
+//
+//                        x_point = (x_ref * cos(ref_yaw) - y_ref * sin(ref_yaw));
+//                        y_point = (x_ref * sin(ref_yaw) + y_ref * cos(ref_yaw));
+////
+////                        x_point += ref_x;
+////                        y_point += ref_y;
+//
+//                        next_x_vals.push_back(x_point + ref_x);
+//                        next_y_vals.push_back(y_point + ref_y);
+//                    }
+//
+//                    if (!too_close) {
+////                        cout<<"laneFSM.next_x_path: "<<vectorToString(laneFSM.next_x_path)<< endl;
+////                        cout<<"laneFSM.next_y_path: "<<vectorToString(laneFSM.next_y_path)<< endl;
+////                        cout<< "next_x_vals"<< vectorToString(next_x_vals)<< endl;
+////                        cout<< "next_y_vals"<< vectorToString(next_y_vals)<< endl;
+//                        msgJson["next_x"] = laneFSM.next_x_path;
+//                        msgJson["next_y"] = laneFSM.next_y_path;
+//
+//                    } else {
+//
+//                    msgJson["next_x"] = next_x_vals;
+//                    msgJson["next_y"] = next_y_vals;
+//                    }
 
-                        next_x_vals.push_back(x_point + ref_x);
-                        next_y_vals.push_back(y_point + ref_y);
-                    }
 
-                    msgJson["next_x"] = next_x_vals;
-                    msgJson["next_y"] = next_y_vals;
 
                     auto msg = "42[\"control\","+ msgJson.dump()+"]";
 

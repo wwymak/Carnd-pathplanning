@@ -72,4 +72,12 @@ struct FrenetTraj
 	double durationD;
 };
 
+struct TrajectoryStandard {
+	vector<double> x_pts;
+	vector<double> y_pts;
+	double path_end_s;
+	double path_end_d;
+	TrajectoryStandard (vector<double> X={}, vector<double> Y={}) : x_pts(X), y_pts(Y) {}
+};
+
 #endif //PATH_PLANNING_DATASTRUCTS_H

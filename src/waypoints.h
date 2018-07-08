@@ -25,9 +25,11 @@ public:
     void GetSplineTrack();
 
     vector<double> getFrenet(double x, double y, double theta);
+    vector<double> getXY(double s, double d);
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
-    vector<double> getXY(double s, double d);
+    vector<double> getXYSimple(double s, double d);
+
     WaypointData ClosestWaypoint(double x, double y);
     WaypointData NextWaypoint(double x, double y);
 

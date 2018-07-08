@@ -57,15 +57,10 @@ void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
                 mInviewCarsLaneLeft[id] = otherCar;
             }
         }
-
-//        if( (otherCarD == egoLane) && otherCar_S_Horizon > egoHorizonS && otherCar.s - egoHorizonS <= egoHorizonS) {
-//            mInviewCars[id] = otherCar;
-//        }
-//        else if((otherCarD - egoLane == 1) && otherCar_S_Horizon > egoHorizonS && otherCar.s - egoHorizonS <= egoHorizonS) {
-//            mInviewCarsLaneRight[id] = otherCar;
-//        } else if((otherCarD - egoLane == -1) && otherCar_S_Horizon > egoHorizonS && otherCar_S_Horizon - egoHorizonS <= egoHorizonS) {
-//            mInviewCarsLaneLeft[id] = otherCar;
-//        }
     }
+//
+//    cout << "cars in front:" << mInviewCars.size()<< endl;
+//    cout << "cars roght:" << mInviewCarsLaneRight.size()<< endl;
+//    cout << "cars left:" << mInviewCarsLaneLeft.size()<< endl;
 };
 

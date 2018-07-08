@@ -204,3 +204,36 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
     return {x,y};
 
 }
+
+int ConvertDToLane(double d){
+    if(d < 0 || d> 12) {
+        return -1;
+    }
+    if(d < 4) {
+        return 0;
+    } else if(d < 8) {
+        return 1;
+    } else {
+        return 2;
+    }
+}
+
+double ConvertLaneToD(int lane) {
+    if (lane == 0) {
+        return 2;
+    } else if(lane==1) {
+        return 6;
+    } else {
+        return 10;
+    }
+}
+
+string vectorToString(vector<double> inputVec) {
+    stringstream ss;
+    for(size_t i = 0; i < inputVec.size(); ++i){
+        if(i != 0)
+            ss << ",";
+        ss << inputVec[i];
+    }
+    return ss.str();
+}

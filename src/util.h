@@ -38,4 +38,9 @@ vector<double> getFrenet(double x, double y, double theta, const vector<double> 
 // Transform from Frenet s,d coordinates to Cartesian x,y
 vector<double> getXY(double s, double d, const vector<double> &maps_s, const vector<double> &maps_x, const vector<double> &maps_y);
 
+int ConvertDToLane(double d);
+double ConvertLaneToD(int lane);
+
+string vectorToString(vector<double> inputVec);
+
 #endif //PATH_PLANNING_UTIL_H
