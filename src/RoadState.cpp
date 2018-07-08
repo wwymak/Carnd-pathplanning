@@ -33,22 +33,19 @@ void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
     mInviewCars.clear();
     mInviewCarsLaneLeft.clear();
     mInviewCarsLaneRight.clear();
-    int egoLane = Utils::ConvertDToLane(egoVehicle.d);
-    double egoHorizonS = egoVehicle.s +  egoVehicle.speed * deltaT;
-
+    int egoLane = ConvertDToLane(egoVehicle.d);
+    double egoHorizonS = 100 + egoVehicle.s;
+//    double egoHorizonS = egoVehicle.s +  egoVehicle.speed * deltaT;
     for ( auto it = mAllCars.begin(); it != mAllCars.end(); ++it ) {
         int id = it->first;
         CarPositonData otherCar = it->second;
         double otherCar_S_Horizon = otherCar.s + otherCar.speed * deltaT;
-        int otherCarD =Utils::ConvertDToLane(otherCar.d);
+        int otherCarD =ConvertDToLane(otherCar.d);
 //        cout << "other car d"<< otherCar.d<< endl;
         if (otherCarD < 0) {
             continue;
         }
-//        if(egoHorizonS >otherCar_S_Horizon) {
-//        if(((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon))) {
-        if(((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon)) || ((otherCar.s <= egoVehicle.s) &&  (egoHorizonS <otherCar_S_Horizon))) {
-//            cout << "eoghorixon"<< egoVehicle.s<< deltaT<<endl;
+        if((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon)) {
             if(otherCarD == egoLane) {
                 mInviewCars[id] = otherCar;
             } else if(otherCarD - egoLane == 1) {
@@ -57,6 +54,22 @@ void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
                 mInviewCarsLaneLeft[id] = otherCar;
             }
         }
+        if((otherCar.s <= egoVehicle.s) &&  (egoHorizonS <otherCar_S_Horizon)) {
+            if(otherCarD - egoLane == 1) {
+                mInviewCarsLaneRight[id] = otherCar;
+            } else if(otherCarD - egoLane == -1) {
+                mInviewCarsLaneLeft[id] = otherCar;
+            }
+        }
+//        if(((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon)) || ((otherCar.s <= egoVehicle.s) &&  (egoHorizonS <otherCar_S_Horizon))) {
+//            if(otherCarD == egoLane) {
+//                mInviewCars[id] = otherCar;
+//            } else if(otherCarD - egoLane == 1) {
+//                mInviewCarsLaneRight[id] = otherCar;
+//            } else if(otherCarD - egoLane == -1) {
+//                mInviewCarsLaneLeft[id] = otherCar;
+//            }
+//        }
     }
 //
 //    cout << "cars in front:" << mInviewCars.size()<< endl;

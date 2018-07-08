@@ -187,21 +187,23 @@ int main() {
 //
 //
 //                    if (too_close == true) {
-                    if (shouldChangeLane == true) {
+                    if (shouldChangeLane) {
                         cout << "too close here"<< endl;
 
                         int laneChangeAvailable = laneFSM.CanChangeLane();
-                        cout << "lane change?" << laneChangeAvailable<<endl;
                         if (lane > 0 && (laneChangeAvailable == 3 || laneChangeAvailable ==2) ) {
                             lane = lane -1;
+                            
+                            cout << "lane changing?"<< lane<< endl;
                         } else if (lane < 2 && (laneChangeAvailable == 1|| laneChangeAvailable == 3)){
+                            cout << "lane changing?"<< lane<< endl;
+
                             lane = lane + 1;
                         } else {
                             ref_speed -= 0.5;
                             cout << ref_speed<< "ref speed, lane keeping"<< endl;
                         }
-//                        }
-
+                        
 
                     } else if(ref_speed < MAX_SPEED - 0.2) {
 //                        cout << ref_speed<< "ref speed add"<< endl;
@@ -209,7 +211,7 @@ int main() {
                     } else if(ref_speed > MAX_SPEED ) {
                         ref_speed -= 0.5;
                     }
-
+                    
                     TrajectoryStandard splineTraj = trajectory.CalcSplineTraj(trajPrev, mVehicle, wps, ref_speed, lane);
 
                     msgJson["next_x"] = splineTraj.x_pts;

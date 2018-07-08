@@ -432,7 +432,7 @@ VectorXd Trajectory::CalcPositionAt(VectorXd polycoeffs, double time) {
 }
 
 TrajectoryStandard Trajectory::CalcSplineTraj(TrajectoryStandard &previous_xy, CarPositonData &car, Waypoints &wps, double targetSpeed, int targetLane) {
-    TrajectoryStandard calcSplineTraj;
+    TrajectoryStandard outputSplineTraj;
     double horizon_x = 30.0;
     bool too_close = false;
     double too_close_other_car_s = 100;
@@ -533,8 +533,8 @@ TrajectoryStandard Trajectory::CalcSplineTraj(TrajectoryStandard &previous_xy, C
             next_y_vals.push_back(y_point + ref_y);
         }
 
-    calcSplineTraj.x_pts = next_x_vals;
-    calcSplineTraj.y_pts = next_y_vals;
+    outputSplineTraj.x_pts = next_x_vals;
+    outputSplineTraj.y_pts = next_y_vals;
 
-    return calcSplineTraj;
+    return outputSplineTraj;
 }

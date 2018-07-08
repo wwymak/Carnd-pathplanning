@@ -33,7 +33,7 @@ int LaneFSM::CanChangeLane() {
 bool LaneFSM::ShouldPrepareChange() {
     unordered_map <int, CarPositonData> mInviewCarsFront = rs.mInviewCars;
     if(!mInviewCarsFront.empty()) {
-        cout << "cars in front"<<endl;
+        cout << "cars in front: "<<mInviewCarsFront.size()<<endl;
         return true;
     } else {
         return false;
