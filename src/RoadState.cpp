@@ -34,7 +34,7 @@ void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
     mInviewCarsLaneLeft.clear();
     mInviewCarsLaneRight.clear();
     int egoLane = ConvertDToLane(egoVehicle.d);
-    double egoHorizonS = 100 + egoVehicle.s;
+    double egoHorizonS = 50 + egoVehicle.s;
 //    double egoHorizonS = egoVehicle.s +  egoVehicle.speed * deltaT;
     for ( auto it = mAllCars.begin(); it != mAllCars.end(); ++it ) {
         int id = it->first;

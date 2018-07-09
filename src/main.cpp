@@ -114,7 +114,6 @@ int main() {
                     mVehicle.yaw = j[1]["yaw"];
                     mVehicle.speed = mileph2meterps(j[1]["speed"]);
 
-
                     // Previous path data given to the Planner
                     vector<double> previous_path_x = j[1]["previous_path_x"];
                     vector<double> previous_path_y = j[1]["previous_path_y"];
@@ -201,6 +200,9 @@ int main() {
                             lane = lane + 1;
                         } else {
                             ref_speed -= 0.5;
+                            if (ref_speed < 0) {
+                                ref_speed = 0.01;
+                            }
                             cout << ref_speed<< "ref speed, lane keeping"<< endl;
                         }
                         

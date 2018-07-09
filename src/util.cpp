@@ -211,7 +211,7 @@ int ConvertDToLane(double d){
     }
     if(d < 4) {
         return 0;
-    } else if(d < 8) {
+    } else if(d>=4 && d < 8) {
         return 1;
     } else {
         return 2;
