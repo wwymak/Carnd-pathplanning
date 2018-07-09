@@ -15,6 +15,9 @@ LaneFSM::LaneFSM(RoadState& rs, Waypoints& wps)
 }
 
 int LaneFSM::CanChangeLane() {
+    if (laneChangingState) {
+        return 0;
+    }
     unordered_map <int, CarPositonData> mInviewCarsLaneLeft = rs.mInviewCarsLaneLeft;
     unordered_map <int, CarPositonData> mInviewCarsLaneRight = rs.mInviewCarsLaneRight;
 

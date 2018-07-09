@@ -29,6 +29,8 @@ public:
 
     bool ShouldPrepareChange();
 
+    bool laneChangingState = false;
+
     void LaneKeeping(CarPositonData& egoVehicle, double predictionTimeWindow);
 
 //    void GenerateLaneKeeping();

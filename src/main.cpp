@@ -51,6 +51,7 @@ int main() {
     LaneFSM laneFSM(roadState, wps);
     Trajectory trajectory;
 
+
     // Load up map values for waypoint's x,y,s and d normalized normal vectors
     vector<double> map_waypoints_x;
     vector<double> map_waypoints_y;
@@ -92,6 +93,7 @@ int main() {
         // The 2 signifies a websocket event
         //auto sdata = string(data).substr(0, length);
         //cout << sdata << endl;
+        float ref_other_speed_collide = MAX_SPEED;
         if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
             auto s = hasData(data);
@@ -161,6 +163,46 @@ int main() {
                     double horizon_x = 30.0;
                     bool too_close = false;
                     double too_close_other_car_s = 100;
+
+                    for (int i = 0; i < sensor_fusion.size(); i++) {
+                        float d = sensor_fusion.at(i).at(6);
+                        // if other car is in our lane:
+                        if (d > (2 + 4 * lane -2) && d < (2 + 4 * lane + 2)) {
+                            double vx = sensor_fusion.at(i).at(3);
+                            double vy = sensor_fusion.at(i).at(4);
+                            double other_speed = sqrt(vx * vx + vy * vy);
+                            double other_car_s = sensor_fusion.at(i).at(5);
+                            if((other_car_s > mVehicle.s) && ((other_car_s - mVehicle.s) < horizon_x)) {
+                                too_close = true;
+                                ref_other_speed_collide = other_speed;
+                            }
+                        }
+                    }
+
+
+                    if (too_close == true && ref_speed > ref_other_speed_collide) {
+                        cout << "too close here"<< endl;
+                        cout << "ref_other_speed_collide"<< ref_other_speed_collide<< endl;
+
+                        int laneChangeAvailable = laneFSM.CanChangeLane();
+                        cout << "lane change?" << laneChangeAvailable<<endl;
+                        if (lane > 0 && (laneChangeAvailable == 3 || laneChangeAvailable ==2) ) {
+                            lane = lane -1;
+                        } else if (lane < 2 && (laneChangeAvailable == 1|| laneChangeAvailable == 3)){
+                            lane = lane + 1;
+                        } else {
+                            ref_speed -= 0.5;
+                            cout << ref_speed<< "ref speed, lane keeping"<< endl;
+                        }
+//                        }
+
+
+                    } else if(ref_speed < MAX_SPEED - 0.2) {
+//                        cout << ref_speed<< "ref speed add"<< endl;
+                        ref_speed += 0.2;
+                    } else if(ref_speed > MAX_SPEED ) {
+                        ref_speed -= 0.5;
+                    }
 //
 //
 //                    vector<double> next_x_vals;
@@ -186,33 +228,33 @@ int main() {
 //
 //
 //                    if (too_close == true) {
-                    if (shouldChangeLane) {
-                        cout << "too close here"<< endl;
-
-                        int laneChangeAvailable = laneFSM.CanChangeLane();
-                        if (lane > 0 && (laneChangeAvailable == 3 || laneChangeAvailable ==2) ) {
-                            lane = lane -1;
-                            
-                            cout << "lane changing?"<< lane<< endl;
-                        } else if (lane < 2 && (laneChangeAvailable == 1|| laneChangeAvailable == 3)){
-                            cout << "lane changing?"<< lane<< endl;
-
-                            lane = lane + 1;
-                        } else {
-                            ref_speed -= 0.5;
-                            if (ref_speed < 0) {
-                                ref_speed = 0.01;
-                            }
-                            cout << ref_speed<< "ref speed, lane keeping"<< endl;
-                        }
-                        
-
-                    } else if(ref_speed < MAX_SPEED - 0.2) {
-//                        cout << ref_speed<< "ref speed add"<< endl;
-                        ref_speed += 0.2;
-                    } else if(ref_speed > MAX_SPEED ) {
-                        ref_speed -= 0.5;
-                    }
+//                    if (shouldChangeLane) {
+//                        cout << "too close here"<< endl;
+//
+//                        int laneChangeAvailable = laneFSM.CanChangeLane();
+//                        if (lane > 0 && (laneChangeAvailable == 3 || laneChangeAvailable ==2) ) {
+//                            lane = lane -1;
+//
+//                            cout << "lane changing?"<< lane<< endl;
+//                        } else if (lane < 2 && (laneChangeAvailable == 1|| laneChangeAvailable == 3)){
+//                            cout << "lane changing?"<< lane<< endl;
+//
+//                            lane = lane + 1;
+//                        } else {
+//                            ref_speed -= 0.5;
+//                            if (ref_speed < 0) {
+//                                ref_speed = 0.01;
+//                            }
+//                            cout << ref_speed<< "ref speed, lane keeping"<< endl;
+//                        }
+//
+//
+//                    } else if(ref_speed < MAX_SPEED - 0.2) {
+////                        cout << ref_speed<< "ref speed add"<< endl;
+//                        ref_speed += 0.2;
+//                    } else if(ref_speed > MAX_SPEED ) {
+//                        ref_speed -= 0.5;
+//                    }
                     
                     TrajectoryStandard splineTraj = trajectory.CalcSplineTraj(trajPrev, mVehicle, wps, ref_speed, lane);
 

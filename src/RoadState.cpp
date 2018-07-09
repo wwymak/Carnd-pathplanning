@@ -34,15 +34,15 @@ void RoadState::CalcInViewCars(CarPositonData& egoVehicle, double deltaT) {
     mInviewCarsLaneLeft.clear();
     mInviewCarsLaneRight.clear();
     int egoLane = ConvertDToLane(egoVehicle.d);
-    double egoHorizonS = 50 + egoVehicle.s;
-//    double egoHorizonS = egoVehicle.s +  egoVehicle.speed * deltaT;
+//    double egoHorizonS = 50 + egoVehicle.s;
+    double egoHorizonS = egoVehicle.s +  egoVehicle.speed * deltaT;
     for ( auto it = mAllCars.begin(); it != mAllCars.end(); ++it ) {
         int id = it->first;
         CarPositonData otherCar = it->second;
         double otherCar_S_Horizon = otherCar.s + otherCar.speed * deltaT;
         int otherCarD =ConvertDToLane(otherCar.d);
 //        cout << "other car d"<< otherCar.d<< endl;
-        if (otherCarD < 0) {
+        if (otherCarD < 0 || otherCarD > 12) {
             continue;
         }
         if((otherCar.s > egoVehicle.s) &&  (egoHorizonS >otherCar_S_Horizon)) {
