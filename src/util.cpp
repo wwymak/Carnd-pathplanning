@@ -193,15 +193,15 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
     // the x,y,s along the segment
     double seg_s = (s-maps_s[prev_wp]);
 
-    double seg_x = maps_x[prev_wp]+seg_s*cos(heading);
-    double seg_y = maps_y[prev_wp]+seg_s*sin(heading);
+        double seg_x = maps_x[prev_wp]+seg_s*cos(heading);
+        double seg_y = maps_y[prev_wp]+seg_s*sin(heading);
 
-    double perp_heading = heading-pi()/2;
+        double perp_heading = heading-pi()/2;
 
-    double x = seg_x + d*cos(perp_heading);
-    double y = seg_y + d*sin(perp_heading);
+        double x = seg_x + d*cos(perp_heading);
+        double y = seg_y + d*sin(perp_heading);
 
-    return {x,y};
+        return {x,y};
 
 }
 
@@ -210,11 +210,18 @@ int ConvertDToLane(double d){
         return -1;
     }
     if(d < 4) {
+
+    } else if (d >=4 && d < 8) {
+
+    }
+    if(d < 4 && fabs(d -2) < 0.5) {
         return 0;
-    } else if(d>=4 && d < 8) {
+    } else if(d>=4 && d < 8  && fabs(d -6) < 0.5) {
         return 1;
-    } else {
+    } else if(fabs(d -10) < 0.5){
         return 2;
+    } else {
+        return 100; //lane changing
     }
 }
 

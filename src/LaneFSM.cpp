@@ -21,7 +21,7 @@ int LaneFSM::CanChangeLane() {
     unordered_map <int, CarPositonData> mInviewCarsLaneLeft = rs.mInviewCarsLaneLeft;
     unordered_map <int, CarPositonData> mInviewCarsLaneRight = rs.mInviewCarsLaneRight;
 
-    cout<< "can change lane " << mInviewCarsLaneLeft.size() <<","<< mInviewCarsLaneRight.size()<< endl;
+    //cout<< "can change lane " << mInviewCarsLaneLeft.size() <<","<< mInviewCarsLaneRight.size()<< endl;
     if(mInviewCarsLaneLeft.empty() && mInviewCarsLaneRight.empty()){
         return 3;
     }else if(mInviewCarsLaneLeft.empty()){
@@ -69,7 +69,7 @@ void LaneFSM::LaneKeeping(CarPositonData& egoVehicle, double predictionTimeWindo
 
         for(size_t i = 0; i < fpath.s.size(); ++i) {
 
-            vector<double> point_x_y = wps.getXYSimple(fpath.s.at(i), fpath.d.at(i));
+            vector<double> point_x_y = wps.getXY(fpath.s.at(i), fpath.d.at(i));
             next_x_path.push_back(point_x_y[0]);
             next_y_path.push_back(point_x_y[1]);
         }

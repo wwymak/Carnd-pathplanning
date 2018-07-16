@@ -32,6 +32,10 @@ struct CarPositonData
     double d;
     double yaw;
     double speed;
+    int lane;
+    int targetLane;
+    double targetSpeed;
+
 };
 
 struct WaypointData

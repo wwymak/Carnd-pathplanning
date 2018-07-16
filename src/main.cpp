@@ -45,54 +45,30 @@ string hasData(string s) {
 
 int main() {
     uWS::Hub h;
-
+    cout << "main start"<< endl;
     RoadState roadState;
     Waypoints wps;
     LaneFSM laneFSM(roadState, wps);
     Trajectory trajectory;
+    CarPositonData mVehicle; //= CarData(0., 0., 0., 0., 0.,  0., 1.0, 0., false);
+    mVehicle.x = 0;
+    mVehicle.y = 0;
+    mVehicle.s = 0;
+    mVehicle.d = 0;
+    mVehicle.yaw = 0;
+    mVehicle.speed = 0;
+    mVehicle.targetSpeed = 0;
+    mVehicle.lane = lane;
+    mVehicle.targetLane = lane;
 
-
-    // Load up map values for waypoint's x,y,s and d normalized normal vectors
-    vector<double> map_waypoints_x;
-    vector<double> map_waypoints_y;
-    vector<double> map_waypoints_s;
-    vector<double> map_waypoints_dx;
-    vector<double> map_waypoints_dy;
-
-    // Waypoint map to read from
-    string map_file_ = "../data/highway_map.csv";
-    // The max s value before wrapping around the track back to 0
-    double max_s = 6945.554;
-
-    ifstream in_map_(map_file_.c_str(), ifstream::in);
-
-    string line;
-    while (getline(in_map_, line)) {
-        istringstream iss(line);
-        double x;
-        double y;
-        float s;
-        float d_x;
-        float d_y;
-        iss >> x;
-        iss >> y;
-        iss >> s;
-        iss >> d_x;
-        iss >> d_y;
-        map_waypoints_x.push_back(x);
-        map_waypoints_y.push_back(y);
-        map_waypoints_s.push_back(s);
-        map_waypoints_dx.push_back(d_x);
-        map_waypoints_dy.push_back(d_y);
-    }
-
-    h.onMessage([&trajectory, &laneFSM, &roadState, &wps, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+    h.onMessage([&mVehicle, &trajectory, &laneFSM, &roadState, &wps](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                                                                                                          uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
         // The 2 signifies a websocket event
         //auto sdata = string(data).substr(0, length);
         //cout << sdata << endl;
+
         float ref_other_speed_collide = MAX_SPEED;
         if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
@@ -107,14 +83,26 @@ int main() {
                     // j[1] is the data JSON object
 
                     // Main car's localization Data
-                    CarPositonData mVehicle;
+                    // CarPositonData mVehicle;
                     // Main car's localization Data
                     mVehicle.x = j[1]["x"];
                     mVehicle.y = j[1]["y"];
-                    mVehicle.s = j[1]["s"];
-                    mVehicle.d = j[1]["d"];
                     mVehicle.yaw = j[1]["yaw"];
+                    vector<double> carsd = wps.getFrenet(mVehicle.x, mVehicle.y, mVehicle.yaw);//j[1]["s"];
+                    mVehicle.s = carsd.at(0);
+                    mVehicle.d = carsd.at(1); //j[1]["d"];
+
                     mVehicle.speed = mileph2meterps(j[1]["speed"]);
+
+
+                    //can't change lane unless one set of lane changing is ifnished
+
+                    if (ConvertDToLane(mVehicle.d) > 2) {
+                        cout << "lane changing going on"<< ConvertDToLane(mVehicle.d)<<","<< mVehicle.d<< endl;
+                        laneFSM.laneChangingState = true;
+                    } else {
+                        laneFSM.laneChangingState = false;
+                    }
 
                     // Previous path data given to the Planner
                     vector<double> previous_path_x = j[1]["previous_path_x"];
@@ -130,6 +118,8 @@ int main() {
                     trajPrev.y_pts = previous_path_y;
                     trajPrev.path_end_s = end_path_s;
                     trajPrev.path_end_d = end_path_d;
+
+
 
                     // Sensor Fusion Data, a list of all other cars on the same side of the road.
                     auto sensor_fusion = j[1]["sensor_fusion"];
@@ -149,7 +139,6 @@ int main() {
                     roadState.CalcInViewCars(mVehicle, timeHorizon);
 
                     bool shouldChangeLane = laneFSM.ShouldPrepareChange();
-
 
 //                    laneFSM.LaneKeeping(mVehicle, timeHorizon);
 
@@ -180,12 +169,9 @@ int main() {
                     }
 
 
-                    if (too_close == true && ref_speed > ref_other_speed_collide) {
-                        cout << "too close here"<< endl;
-                        cout << "ref_other_speed_collide"<< ref_other_speed_collide<< endl;
-
+                    if (too_close && ref_speed > ref_other_speed_collide) {
                         int laneChangeAvailable = laneFSM.CanChangeLane();
-                        cout << "lane change?" << laneChangeAvailable<<endl;
+                        //cout << "lane change?" << laneChangeAvailable<<endl;
                         if (lane > 0 && (laneChangeAvailable == 3 || laneChangeAvailable ==2) ) {
                             lane = lane -1;
                         } else if (lane < 2 && (laneChangeAvailable == 1|| laneChangeAvailable == 3)){
@@ -255,9 +241,8 @@ int main() {
 //                    } else if(ref_speed > MAX_SPEED ) {
 //                        ref_speed -= 0.5;
 //                    }
-                    
-                    TrajectoryStandard splineTraj = trajectory.CalcSplineTraj(trajPrev, mVehicle, wps, ref_speed, lane);
 
+                    TrajectoryStandard splineTraj = trajectory.CalcSplineTraj(trajPrev, mVehicle, wps, ref_speed, lane);
                     msgJson["next_x"] = splineTraj.x_pts;
                     msgJson["next_y"] = splineTraj.y_pts;
 

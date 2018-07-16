@@ -439,7 +439,7 @@ TrajectoryStandard Trajectory::CalcSplineTraj(TrajectoryStandard &previous_xy, C
 
     vector<double> previous_path_x = previous_xy.x_pts;
     vector<double> previous_path_y = previous_xy.y_pts;
-    int prevpath_size = previous_path_x.size();
+    int prevpath_size = (int)previous_path_x.size();
 
     vector<double> next_x_vals;
     vector<double> next_y_vals;
@@ -479,7 +479,7 @@ TrajectoryStandard Trajectory::CalcSplineTraj(TrajectoryStandard &previous_xy, C
 
     // getting a largely spaced waypoints to fit spline
     for (int i = 1; i < 4; i++) {
-        vector<double> next_wp= wps.getXYSimple((ref_s + (i * 30)), (2 + 4 * targetLane));
+        vector<double> next_wp= wps.getXY((ref_s + (i * 30)), (2 + 4 * targetLane));
         pts_x.push_back(next_wp[0]);
         pts_y.push_back(next_wp[1]);
     }

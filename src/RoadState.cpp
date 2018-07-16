@@ -11,17 +11,17 @@ void RoadState::UpdateRoadState(vector<SensorFusionData>& sfData, Waypoints& wps
     for (int i = 0; i< sfData.size(); i++) {
         SensorFusionData sfd = sfData.at(i);
         int id = sfd.id;
-        double speed = sqrt(sfd.vx * sfd.vx + sfd.vy + sfd.vy);
+        double vxy = sqrt(sfd.vx * sfd.vx + sfd.vy + sfd.vy);
         CarPositonData c;
-        c.speed = speed;
         c.id = id;
         c.s = sfd.s;
-        c.d = sfd.d;
-
         if (c.s >= wps.max_track_s) {
             c.s -= wps.max_track_s;
         }
+        c.d = sfd.d;
+        double vs  = wps.xySpeedToFrenetSpeed(vxy, c.s);
 
+        c.speed = vs;
         mAllCars[id] =c;
     }
 
